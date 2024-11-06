@@ -7,6 +7,9 @@ public:
     Face();
     Face(VertexHandle* vh1, VertexHandle* vh2, VertexHandle* vh3);
     VertexHandle* vh(int index);
+
+    QVector3D normal();
+    float area();
 private:
     VertexHandle* m_pVhs[3];
 };

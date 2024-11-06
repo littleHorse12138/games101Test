@@ -13,6 +13,13 @@ public:
     void widgetScaleChanged(float w, float h);
 
     void addModel(Model* model);
+    QVector3D cameraPos() const;
+    void setCameraPos(const QVector3D &newCameraPos);
+
+    void moveFront();
+    void moveBack();
+protected:
+    void updateCameraData();
 private:
     QVector3D m_cameraPos = QVector3D(0, 0, -10);
     QVector3D m_cameraFront = QVector3D(0, 0, 0);

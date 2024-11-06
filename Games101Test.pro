@@ -13,13 +13,18 @@ SOURCES += \
     datas/camera.cpp \
     datas/face.cpp \
     datas/facehandle.cpp \
+    datas/light.cpp \
+    datas/material.cpp \
     datas/meshdata.cpp \
     datas/model.cpp \
     datas/shaderprogram.cpp \
     datas/vertex.cpp \
     datas/vertexhandle.cpp \
+    datas/viewer.cpp \
     main.cpp \
     mainwindow.cpp \
+    manager/lightmanager.cpp \
+    manager/materialmanager.cpp \
     manager/meshdatamanager.cpp \
     manager/shaderprogrammanager.cpp \
     tool/tool.cpp
@@ -29,12 +34,17 @@ HEADERS += \
     datas/camera.h \
     datas/face.h \
     datas/facehandle.h \
+    datas/light.h \
+    datas/material.h \
     datas/meshdata.h \
     datas/model.h \
     datas/shaderprogram.h \
     datas/vertex.h \
     datas/vertexhandle.h \
+    datas/viewer.h \
     mainwindow.h \
+    manager/lightmanager.h \
+    manager/materialmanager.h \
     manager/meshdatamanager.h \
     manager/shaderprogrammanager.h \
     tool/tool.h

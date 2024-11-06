@@ -57,7 +57,6 @@ bool MeshDataManager::readObj(MeshData *data, QString path)
     while(!in.atEnd()){
         auto line = in.readLine();
         auto list = line.split(" ");
-        qDebug() << "!!" << line << list;
         if(list.empty()){
             continue;
         }
@@ -65,9 +64,14 @@ bool MeshDataManager::readObj(MeshData *data, QString path)
             QVector3D v(list[1].toFloat(), list[2].toFloat(), list[3].toFloat());
             data->addVertex(v);
         }else if(list[0] == "f"){
+            for(auto &l: list){
+                l = l.split("/").first();
+            }
             data->addFace(data->vertexHandle(list[1].toInt() - 1),
                           data->vertexHandle(list[2].toInt() - 1),
                           data->vertexHandle(list[3].toInt() - 1));
+        }else if(list[0] == "g" && list[1] == "object_2"){
+            break;
         }
     }
 

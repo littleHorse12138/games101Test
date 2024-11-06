@@ -8,6 +8,7 @@
 #include <QList>
 #include <QMap>
 class Model;
+class Material;
 class MeshData
 {
 public:
@@ -28,6 +29,17 @@ public:
     int faceNum() const;
 
     QList <float> getVertices();
+    int vertexNum() const;
+
+    //拓扑关系
+    QList <FaceHandle*> getBoundingFace(VertexHandle* vh);
+
+    //法向量
+    QVector3D normal(VertexHandle* vh);
+    QVector3D normal(FaceHandle* vh);
+    Material *material() const;
+    void setMaterial(Material *newMaterial);
+
 private:
     Model* m_pPar = nullptr;
 
@@ -38,6 +50,12 @@ private:
     QList <VertexHandle*> m_vertexHandleList;
 
     int m_faceNum = 0;
+    int m_vertexNum = 0;
+
+    //相邻关系
+    QMap <VertexHandle*, QList <FaceHandle*>> m_vertexAndBoundFaceMap;
+
+    Material* m_material;
 };
 
 #endif // MESHDATA_H

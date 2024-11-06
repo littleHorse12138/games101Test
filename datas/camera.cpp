@@ -29,3 +29,50 @@ void Camera::addModel(Model *model)
 {
     m_models.append(model);
 }
+
+QVector3D Camera::cameraPos() const
+{
+    return m_cameraPos;
+}
+
+void Camera::setCameraPos(const QVector3D &newCameraPos)
+{
+    m_cameraPos = newCameraPos;
+}
+
+void Camera::moveFront()
+{
+    qDebug() << "chufa!!@@";
+    // auto dir = (m_cameraFront - m_cameraPos);
+    auto dir = QVector3D(1,0,0);
+    dir.normalize();
+    m_cameraPos += dir * 5.5;
+    updateCameraData();
+}
+
+void Camera::moveBack()
+{
+    // auto dir = (m_cameraFront - m_cameraPos);
+    auto dir = QVector3D(1,0,0);
+    dir.normalize();
+    m_cameraPos -= dir * 5.5;
+    updateCameraData();
+}
+
+void Camera::updateCameraData()
+{
+    for(auto model: m_models){
+        if(model->pShader()){
+            qDebug() << "inside;" << m_cameraPos;
+            model->pShader()->use();
+            model->pShader()->setMatrix("view", getViewMatrix());
+            model->pShader()->setVec3("viewPos", cameraPos());
+            model->pShader()->unUse();
+        }
+    }
+
+    QVector3D p(1,0,0);
+    QMatrix4x4 m;
+    m.translate(QVector3D(0, 5, 0));
+    qDebug() << "test" << p*m << getPerspectiveMatrix()*getViewMatrix()*p;
+}

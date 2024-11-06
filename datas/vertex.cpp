@@ -14,3 +14,4 @@ void Vertex::setPos(const QVector3D &newPos)
 {
     m_pos = newPos;
 }
+

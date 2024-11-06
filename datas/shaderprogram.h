@@ -16,6 +16,7 @@ public:
     virtual void setInt(QString name, int data);
     virtual void setFloat(QString name, float data);
     virtual void setMatrix(QString name, QMatrix4x4 data);
+    virtual void setVec3(QString name, QVector3D data);
 
     int vertexShaderID() const;
     void setVertexShaderID(int newVertexShaderID);
