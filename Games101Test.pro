@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     canvas/openglwidget.cpp \
+    canvas/simopenglwidget.cpp \
     datas/camera.cpp \
     datas/face.cpp \
     datas/facehandle.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
 
 HEADERS += \
     canvas/openglwidget.h \
+    canvas/simopenglwidget.h \
     datas/camera.h \
     datas/face.h \
     datas/facehandle.h \

@@ -80,7 +80,7 @@ QList<float> MeshData::getVertices()
             vertices.append(n[2]);
             vertices.append(1);
             vertices.append(0);
-            vertices.append(1);
+            vertices.append(0);
         }
     }
     return vertices;

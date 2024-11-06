@@ -20,6 +20,16 @@ void Model::init()
     m_pMesh = new MeshData;
 }
 
+unsigned int Model::vao() const
+{
+    return m_vao;
+}
+
+void Model::setVao(unsigned int newVao)
+{
+    m_vao = newVao;
+}
+
 int Model::nodeMask() const
 {
     return m_nodeMask;
@@ -70,57 +80,35 @@ QMatrix4x4 Model::getMatrix()
 
 void Model::updateMeshToShader()
 {
-    if(!m_pShader){
-        return;
+    auto data = pMesh()->getVertices();
+    GLfloat* vertices = new GLfloat[data.size()];
+    for(int i = 0; i < data.size(); i++){
+        vertices[i] = data[i];
     }
-    m_pShader->use();
-    glGenBuffers(1, &m_vbo);
-    // float vertices[] = {
-                        // 1, 0, 0, 0, 1, 0, -1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, 0, 0, 0, 1, 1, 0, 0, -1, 0, 0
-        // -0.5f, -0.5f, 0.0f,
-        // 0.5f, -0.5f, 0.0f,
-        // 0.0f,  0.5f, 0.0f,
-        // 0.3f + -0.5f, -0.5f, 0.0f,
-        // 0.3f + 0.5f, -0.5f, 0.0f,
-        // 0.3f + 0.0f,  0.5f, 0.0f
-    // };
-    auto data = m_pMesh->getVertices();
+    qDebug() << "update mesh" << sizeof(data);
+    GLuint VAO;
+    glGenVertexArrays(1, &VAO);
 
-    float* vertices = new float[data.size()];
-    for (int i = 0; i < data.size(); ++i) {
-        vertices[i] = data.at(i);
-    }
+    GLuint VBO;
+    glGenBuffers(1, &VBO);
 
-    glBindBuffer(GL_ARRAY_BUFFER, m_vao);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), vertices, GL_STATIC_DRAW);
-    m_pShader->use();
-    // 0. 复制顶点数组到缓冲中供OpenGL使用
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), vertices, GL_STATIC_DRAW);
+    m_vao = VAO;
+    m_vbo = VBO;
 
-    // 1. 设置顶点属性指针
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)0);
+    glBindVertexArray(VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*data.size(), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(0 * sizeof(float)));
     glEnableVertexAttribArray(0);
 
-    // 法向量属性
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    // 颜色属性
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
-    // 2. 当我们渲染一个物体时要使用着色器程序
-    // glUseProgram(shaderProgram);
-    // 3. 绘制物体
-    // 1. 绑定VAO
-    glGenVertexArrays(1, &m_vao);
-    glBindVertexArray(m_vao);
-    // 2. 把顶点数组复制到缓冲中供OpenGL使用
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(data), vertices, GL_STATIC_DRAW);
-    // 3. 设置顶点属性指针
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(m_vao);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindVertexArray(0);
 }

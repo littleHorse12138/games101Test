@@ -76,8 +76,9 @@ void OpenglWidget::drawModel(Model *model)
         return;
     }
     if(model->pMesh() && model->pShader() && model->nodeMask()){
-        qDebug() << "drawModel!!";
+        qDebug() << "drawModel!!" << model->pMesh()->faceNum() << model->pMesh()->vertexNum() << model->vao();
         model->pShader()->use();
+        glBindVertexArray(model->vao());
         glDrawArrays(GL_TRIANGLES, 0, model->pMesh()->faceNum() * 3);
         model->pShader()->unUse();
     }
@@ -96,15 +97,13 @@ void OpenglWidget::testInit()
     Model* newModel = new Model;
     MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
     SM->bindToBlingPhoneShader(newModel, m_pCamera);
+    newModel->pShader()->use();
     newModel->updateMeshToShader();
+    newModel->pShader()->use();
     MDM->addModel(newModel);
     update();
 
 
-    QMatrix4x4 mat1;
-    newModel->setMatrix(mat1);
-    newModel->pShader()->setMatrix("projection", m_pCamera->getPerspectiveMatrix());
-    newModel->pShader()->setMatrix("view", m_pCamera->getViewMatrix());
 
     MM->bindModelToRubberMaterial(newModel);
 
@@ -114,6 +113,12 @@ void OpenglWidget::testInit()
     newModel->pShader()->setVec3("lightPos", m_pLight->lightPos());
     newModel->pShader()->setVec3("viewPos", m_pCamera->cameraPos());
 
+
+    QMatrix4x4 mat1;
+    newModel->setMatrix(mat1);
+    newModel->pShader()->setMatrix("projection", m_pCamera->getPerspectiveMatrix());
+    newModel->pShader()->setMatrix("view", m_pCamera->getViewMatrix());
+    newModel->pShader()->unUse();
 
 }
 

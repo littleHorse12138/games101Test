@@ -27,6 +27,9 @@ public:
 
     void addChild(Model* child);
 
+    unsigned int vao() const;
+    void setVao(unsigned int newVao);
+
 protected:
     void init();
 private:

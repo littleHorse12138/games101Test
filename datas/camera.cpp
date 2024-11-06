@@ -1,5 +1,6 @@
 #include "camera.h"
 #include "datas/model.h"
+#include <canvas/simopenglwidget.h>
 Camera::Camera() {}
 
 QMatrix4x4 Camera::getViewMatrix()
@@ -17,6 +18,7 @@ QMatrix4x4 Camera::getPerspectiveMatrix()
 void Camera::widgetScaleChanged(float w, float h)
 {
     float aspect = w / h;
+    m_perspectiveMatrix = QMatrix4x4();
     m_perspectiveMatrix.perspective(45.0f, aspect, 0.1f, 100.0f);
     for(auto model: m_models){
         if(model->pShader()){
@@ -46,7 +48,7 @@ void Camera::moveFront()
     // auto dir = (m_cameraFront - m_cameraPos);
     auto dir = QVector3D(1,0,0);
     dir.normalize();
-    m_cameraPos += dir * 5.5;
+    // m_cameraPos += dir * 5.5;
     updateCameraData();
 }
 
@@ -55,7 +57,7 @@ void Camera::moveBack()
     // auto dir = (m_cameraFront - m_cameraPos);
     auto dir = QVector3D(1,0,0);
     dir.normalize();
-    m_cameraPos -= dir * 5.5;
+    // m_cameraPos -= dir * 5.5;
     updateCameraData();
 }
 
@@ -68,6 +70,9 @@ void Camera::updateCameraData()
             model->pShader()->setMatrix("view", getViewMatrix());
             model->pShader()->setVec3("viewPos", cameraPos());
             model->pShader()->unUse();
+
+            SimOpenglWidget* wgt = new SimOpenglWidget(nullptr, model, this);
+            wgt->show();
         }
     }
 
@@ -75,4 +80,5 @@ void Camera::updateCameraData()
     QMatrix4x4 m;
     m.translate(QVector3D(0, 5, 0));
     qDebug() << "test" << p*m << getPerspectiveMatrix()*getViewMatrix()*p;
+
 }
