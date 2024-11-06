@@ -24,6 +24,7 @@ OpenglWidget *OpenglWidget::getInstance()
 void OpenglWidget::initializeGL()
 {
     initializeOpenGLFunctions();
+    glEnable(GL_DEPTH_TEST);
 }
 
 void OpenglWidget::resizeGL(int w, int h)
@@ -34,7 +35,7 @@ void OpenglWidget::resizeGL(int w, int h)
 void OpenglWidget::paintGL()
 {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawModel(MDM->root());
 }
 
@@ -45,14 +46,23 @@ void OpenglWidget::showEvent(QShowEvent *ev)
 
 void OpenglWidget::mousePressEvent(QMouseEvent *ev)
 {
-
+    m_lastMousePlace = ev->pos();
 }
 
 void OpenglWidget::mouseMoveEvent(QMouseEvent *ev)
 {
+    auto nowPlace = ev->pos();
+
     if(ev->buttons() == Qt::LeftButton){
         qDebug() << "chufa!";
+    }else if(ev->buttons() == Qt::MiddleButton){
+        m_pCamera->moveTranslate(nowPlace - m_lastMousePlace);
+    }else if(ev->buttons() == Qt::RightButton){
+        m_pCamera->moveRotate(nowPlace - m_lastMousePlace);
     }
+
+    m_lastMousePlace = nowPlace;
+    update();
 }
 
 void OpenglWidget::mouseReleaseEvent(QMouseEvent *ev)
@@ -76,7 +86,6 @@ void OpenglWidget::drawModel(Model *model)
         return;
     }
     if(model->pMesh() && model->pShader() && model->nodeMask()){
-        qDebug() << "drawModel!!" << model->pMesh()->faceNum() << model->pMesh()->vertexNum() << model->vao();
         model->pShader()->use();
         glBindVertexArray(model->vao());
         glDrawArrays(GL_TRIANGLES, 0, model->pMesh()->faceNum() * 3);

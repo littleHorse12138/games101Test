@@ -18,11 +18,16 @@ public:
 
     void moveFront();
     void moveBack();
+    void moveTranslate(QPoint p);
+    void moveRotate(QPoint p);
+
+    QVector3D cameraFront();
+    QVector3D cameraRight();
 protected:
     void updateCameraData();
 private:
     QVector3D m_cameraPos = QVector3D(0, 0, -30);
-    QVector3D m_cameraFront = QVector3D(0, 0, 0);
+    QVector3D m_cameraViewPoint = QVector3D(0, 0, 0);
     QVector3D m_cameraUp = QVector3D(0, 1, 0);
 
     QMatrix4x4 m_perspectiveMatrix;

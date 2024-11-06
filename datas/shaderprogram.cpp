@@ -48,7 +48,6 @@ void ShaderProgram::setMatrix(QString name, QMatrix4x4 data)
 {
     auto matrixAsFloatArray = data.constData();
     auto location = glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str());
-    qDebug() << "setM" << location;
     glUniformMatrix4fv(location, 1, GL_FALSE, matrixAsFloatArray);
 }
 

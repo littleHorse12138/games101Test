@@ -37,6 +37,8 @@ private:
     Camera* m_pCamera = nullptr;
     Light* m_pLight = nullptr;
 
+    QPoint m_lastMousePlace;
+
 };
 #define OW OpenglWidget::getInstance()
 #endif // OPENGLWIDGET_H

@@ -70,6 +70,11 @@ bool MeshDataManager::readObj(MeshData *data, QString path)
             data->addFace(data->vertexHandle(list[1].toInt() - 1),
                           data->vertexHandle(list[2].toInt() - 1),
                           data->vertexHandle(list[3].toInt() - 1));
+            // if(list.size() == 5){
+            //     data->addFace(data->vertexHandle(list[1].toInt() - 1),
+            //                   data->vertexHandle(list[3].toInt() - 1),
+            //                   data->vertexHandle(list[4].toInt() - 1));
+            // }
         }else if(list[0] == "g" && list[1] == "object_2"){
             break;
         }
