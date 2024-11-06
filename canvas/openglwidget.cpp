@@ -37,6 +37,7 @@ void OpenglWidget::paintGL()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     drawModel(MDM->root());
+    m_updateTimeSinceLastUpdate++;
 }
 
 void OpenglWidget::showEvent(QShowEvent *ev)
@@ -99,6 +100,16 @@ void OpenglWidget::drawModel(Model *model)
 void OpenglWidget::init()
 {
     m_pCamera = new Camera;
+
+    m_pUpdateTimer = new QTimer;
+    connect(m_pUpdateTimer, &QTimer::timeout, this, &OpenglWidget::onTimerUpdateTimeout);
+    m_pUpdateTimer->start(1);
+
+     m_pFpsWidget = new FpsWidget(this, this);
+     m_pFpsWidget->resize(200, 50);
+    m_pFpsWidget->move(0,0);
+
+     resize(800, 600);
 }
 
 void OpenglWidget::testInit()
@@ -129,6 +140,21 @@ void OpenglWidget::testInit()
     newModel->pShader()->setMatrix("view", m_pCamera->getViewMatrix());
     newModel->pShader()->unUse();
 
+}
+
+void OpenglWidget::onTimerUpdateTimeout()
+{
+    update();
+}
+
+void OpenglWidget::setUpdateTimeSinceLastUpdate(int newUpdateTimeSinceLastUpdate)
+{
+    m_updateTimeSinceLastUpdate = newUpdateTimeSinceLastUpdate;
+}
+
+int OpenglWidget::updateTimeSinceLastUpdate() const
+{
+    return m_updateTimeSinceLastUpdate;
 }
 
 Camera *OpenglWidget::pCamera() const

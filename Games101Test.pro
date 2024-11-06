@@ -9,6 +9,7 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    canvas/fpswidget.cpp \
     canvas/openglwidget.cpp \
     canvas/simopenglwidget.cpp \
     datas/camera.cpp \
@@ -31,6 +32,7 @@ SOURCES += \
     tool/tool.cpp
 
 HEADERS += \
+    canvas/fpswidget.h \
     canvas/openglwidget.h \
     canvas/simopenglwidget.h \
     datas/camera.h \
@@ -52,6 +54,7 @@ HEADERS += \
     tool/tool.h
 
 FORMS += \
+    canvas/fpswidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.
