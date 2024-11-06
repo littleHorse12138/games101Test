@@ -1,6 +1,7 @@
 #include "fpswidget.h"
 #include "ui_fpswidget.h"
 #include "openglwidget.h"
+#include "manager/meshdatamanager.h"
 FpsWidget::FpsWidget(OpenglWidget* openglWgt, QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::FpsWidget)
@@ -25,6 +26,7 @@ void FpsWidget::init()
 void FpsWidget::onTimerUpdateTimeout()
 {
     QString text = "FPS:" + QString::number(m_pParWgt->updateTimeSinceLastUpdate());
+    text += ", 渲染点数量:" + QString::number(MDM->getAllRenderPointNum(MDM->root()));
     ui->m_pLabFps->setText(text);
     m_pParWgt->setUpdateTimeSinceLastUpdate(0);
 }

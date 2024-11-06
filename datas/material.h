@@ -35,4 +35,12 @@ protected:
     void init();
 };
 
+class MaterialStainlessSteel: public Material
+{
+public:
+    MaterialStainlessSteel();
+protected:
+    void init();
+};
+
 #endif // MATERIAL_H

@@ -13,11 +13,13 @@ public:
     static MaterialManager* getInstance();
 
     void bindModelToRubberMaterial(Model* model);
+    void bindModelToStainlessSteelMaterial(Model* model);
 protected:
     void init();
 
     void updateMaterialDataToShader(Model* model);
     Material* getRubberMaterial();
+    Material* getStainlessSteelMaterial();
 private:
     QList <Material*> m_materials;
 };

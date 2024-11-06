@@ -1,5 +1,5 @@
 #include "material.h"
-
+#include <QDebug>
 Material::Material() {}
 
 QVector3D Material::diffuse() const
@@ -56,4 +56,17 @@ void MaterialRubber::init()
     setSpecular(QVector3D(0.3f, 0.3f, 0.3f));
     setAmbient(QVector3D(0.1f, 0.1f, 0.1f));
     setShininess(10.0f);
+}
+
+MaterialStainlessSteel::MaterialStainlessSteel()
+{
+    init();
+}
+
+void MaterialStainlessSteel::init()
+{
+    setDiffuse(QVector3D(0.6f, 0.6f, 0.6f));
+    setSpecular(QVector3D(1.0f, 1.0f, 1.0f));
+    setAmbient(QVector3D(0.3f, 0.3f, 0.3f));
+    setShininess(64);
 }

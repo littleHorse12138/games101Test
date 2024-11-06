@@ -92,3 +92,15 @@ void MeshDataManager::setRoot(Model *newRoot)
 {
     m_root = newRoot;
 }
+
+int MeshDataManager::getAllRenderPointNum(Model* model)
+{
+    int an = 0;
+    if(model && model->pShader() && model->nodeMask()){
+        an += model->pMesh()->faceNum() * 3;
+    }
+    for(auto child: model->children()){
+        an += getAllRenderPointNum(child);
+    }
+    return an;
+}

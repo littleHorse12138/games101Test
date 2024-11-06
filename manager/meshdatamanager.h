@@ -17,6 +17,7 @@ public:
     Model *root() const;
     void setRoot(Model *newRoot);
 
+    int getAllRenderPointNum(Model* model);
 protected:
     void init();
     bool readObj(MeshData* data, QString path);

@@ -125,7 +125,7 @@ void OpenglWidget::testInit()
 
 
 
-    MM->bindModelToRubberMaterial(newModel);
+    MM->bindModelToStainlessSteelMaterial(newModel);
 
     m_pLight = new Light;
 
