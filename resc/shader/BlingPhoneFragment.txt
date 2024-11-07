@@ -10,7 +10,6 @@ uniform vec3 lightPos;    // 光源位置
 uniform vec3 viewPos;     // 观察者位置
 
 // 布林冯模型的参数
-uniform vec3 objectColor; // 物体的颜色
 uniform vec3 lightColor;  // 光源的颜色
 
 uniform vec3 materialSpecular;    // 镜面反射的颜色

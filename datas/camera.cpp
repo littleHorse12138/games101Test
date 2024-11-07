@@ -21,16 +21,7 @@ void Camera::widgetScaleChanged(float w, float h)
     float aspect = w / h;
     m_perspectiveMatrix = QMatrix4x4();
     m_perspectiveMatrix.perspective(45.0f, aspect, 0.1f, 100.0f);
-    for(auto model: m_models){
-        if(model->pShader()){
-            model->pShader()->setMatrix("projection", m_perspectiveMatrix);
-        }
-    }
-}
-
-void Camera::addModel(Model *model)
-{
-    m_models.append(model);
+    emit sgCameraPerspectiveChanged();
 }
 
 QVector3D Camera::cameraPos() const
@@ -50,7 +41,7 @@ void Camera::moveFront()
     float moveDis = 1.5;
     m_cameraPos += dir * moveDis;
     m_cameraViewPoint += dir * moveDis;
-    updateCameraData();
+    emit sgCameraMove();
 }
 
 void Camera::moveBack()
@@ -60,7 +51,7 @@ void Camera::moveBack()
     float moveDis = -1.5;
     m_cameraPos += dir * moveDis;
     m_cameraViewPoint += dir * moveDis;
-    updateCameraData();
+    emit sgCameraMove();
 }
 
 void Camera::moveTranslate(QPoint p)
@@ -76,31 +67,11 @@ void Camera::moveTranslate(QPoint p)
     float moveSpeed = 0.1;
     m_cameraPos += (tran1 + tran2) * moveSpeed;
     m_cameraViewPoint += (tran1 + tran2) * moveSpeed;
-    updateCameraData();
+    emit sgCameraMove();
 }
 
 void Camera::moveRotate(QPoint p)
 {
-    // auto nowViewPoint = m_cameraViewPoint;
-
-    // m_cameraViewPoint -= nowViewPoint;
-    // m_cameraPos -= nowViewPoint;
-
-    // float rotateSpeed = 0.1;
-    // QMatrix4x4 rotMat1, rotMat2;
-    // rotMat1.rotate(rotateSpeed * p.x(), m_cameraUp);
-
-    // m_cameraPos = rotMat1 * m_cameraPos;
-    // m_cameraUp = rotMat1 * m_cameraUp;
-
-    // rotMat2.rotate(rotateSpeed * p.y(), cameraRight());
-    // m_cameraPos = rotMat2 * m_cameraPos;
-    // m_cameraUp = rotMat2 * m_cameraUp;
-
-
-    // m_cameraViewPoint += nowViewPoint;
-    // m_cameraPos += nowViewPoint;
-
     float rotateSpeed = 0.1;
     m_cameraPos -= m_cameraViewPoint;
 
@@ -114,9 +85,7 @@ void Camera::moveRotate(QPoint p)
 
     m_cameraPos += m_cameraViewPoint;
 
-    updateCameraData();
-
-
+    emit sgCameraMove();
 }
 
 QVector3D Camera::cameraFront()
@@ -133,15 +102,3 @@ QVector3D Camera::cameraRight()
     return right;
 }
 
-void Camera::updateCameraData()
-{
-    for(auto model: m_models){
-        if(model->pShader()){
-            model->pShader()->use();
-            model->pShader()->setMatrix("view", getViewMatrix());
-            model->pShader()->setVec3("viewPos", cameraPos());
-            model->pShader()->unUse();
-        }
-    }
-
-}

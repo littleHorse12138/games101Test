@@ -31,21 +31,25 @@ void ShaderProgram::unUse()
 
 void ShaderProgram::setBool(QString name, bool data)
 {
+    use();
     glUniform1i(glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str()), data);
 }
 
 void ShaderProgram::setInt(QString name, int data)
 {
+    use();
     glUniform1i(glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str()), data);
 }
 
 void ShaderProgram::setFloat(QString name, float data)
-{    
+{
+    use();
     glUniform1f(glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str()), data);
 }
 
 void ShaderProgram::setMatrix(QString name, QMatrix4x4 data)
 {
+    use();
     auto matrixAsFloatArray = data.constData();
     auto location = glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str());
     glUniformMatrix4fv(location, 1, GL_FALSE, matrixAsFloatArray);
@@ -53,6 +57,7 @@ void ShaderProgram::setMatrix(QString name, QMatrix4x4 data)
 
 void ShaderProgram::setVec3(QString name, QVector3D data)
 {
+    use();
     glUniform3f(glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str()), data[0], data[1], data[2]);
 }
 

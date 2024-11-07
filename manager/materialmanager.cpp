@@ -44,6 +44,9 @@ void MaterialManager::init()
 
 void MaterialManager::updateMaterialDataToShader(Model* model)
 {
+    if(!model->pShader()){
+        return;
+    }
     auto m = model->pMesh()->material();
     model->pShader()->use();
     model->pShader()->setVec3("materialSpecular", m->specular());

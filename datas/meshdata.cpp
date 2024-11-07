@@ -1,8 +1,10 @@
 #include "meshdata.h"
 #include <QDebug>
+#include "datas/boundingbox.h"
 MeshData::MeshData(Model *par)
 {
     m_pPar = par;
+    init();
 }
 
 Model *MeshData::pPar() const
@@ -56,6 +58,11 @@ FaceHandle *MeshData::faceHandle(int index)
 Face *MeshData::face(FaceHandle *handle)
 {
     return m_faceMap[handle];
+}
+
+Vertex *MeshData::vertex(VertexHandle *handle)
+{
+    return m_vertexMap[handle];
 }
 
 int MeshData::faceNum() const
@@ -129,4 +136,24 @@ Material *MeshData::material() const
 void MeshData::setMaterial(Material *newMaterial)
 {
     m_material = newMaterial;
+}
+
+void MeshData::init()
+{
+    m_pBoundingBox = new BoundingBoxAABB;
+}
+
+QList<FaceHandle *> MeshData::faceHandleList() const
+{
+    return m_faceHandleList;
+}
+
+BoundingBox *MeshData::pBoundingBox() const
+{
+    return m_pBoundingBox;
+}
+
+void MeshData::setPBoundingBox(BoundingBox *newPBoundingBox)
+{
+    m_pBoundingBox = newPBoundingBox;
 }

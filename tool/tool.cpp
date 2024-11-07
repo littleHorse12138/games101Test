@@ -10,3 +10,8 @@ float Tool::length(QPoint p)
 {
     return sqrt(p.x()*p.x() + p.y()*p.y());
 }
+
+Model *GenerateModelTool::generateBall(float radius)
+{
+    return nullptr;
+}

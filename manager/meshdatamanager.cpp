@@ -26,7 +26,6 @@ bool MeshDataManager::readMesh(MeshData *data, QString path)
         data = new MeshData(nullptr);
     }
     auto suffix = Tool::suffix(path);
-    qDebug() << "suffix" << suffix;
     if(suffix == "obj"){
         return readObj(data, path);
     }else{

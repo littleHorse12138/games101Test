@@ -1,8 +1,13 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 #include <QVector3D>
-class Light
+#include <QObject>
+#include <QObject>
+class Light: public QObject
 {
+    Q_OBJECT
+signals:
+    void sgLightChanged();
 public:
     Light();
     QVector3D lightPos() const;

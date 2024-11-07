@@ -9,16 +9,13 @@
 #include <QTimer>
 class Model;
 class Light;
+class Viewer;
 class OpenglWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
 public:
     explicit OpenglWidget(QWidget *parent = nullptr);
     static OpenglWidget* getInstance();
-
-
-    Camera *pCamera() const;
-    void setPCamera(Camera *newPCamera);
 
     int updateTimeSinceLastUpdate() const;
 
@@ -41,7 +38,7 @@ protected:
 
     void onTimerUpdateTimeout();
 private:
-    Camera* m_pCamera = nullptr;
+    Viewer* m_pViewer = nullptr;
     Light* m_pLight = nullptr;
 
     QPoint m_lastMousePlace;

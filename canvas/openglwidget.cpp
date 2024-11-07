@@ -6,6 +6,9 @@
 #include "manager/materialmanager.h"
 #include "datas/light.h"
 #include <QWheelEvent>
+#include "datas/viewer.h"
+#include "tool/intersection.h"
+#include "tool/tool.h"
 OpenglWidget::OpenglWidget(QWidget *parent)
     :QOpenGLWidget(parent)
 {
@@ -29,7 +32,7 @@ void OpenglWidget::initializeGL()
 
 void OpenglWidget::resizeGL(int w, int h)
 {
-    m_pCamera->widgetScaleChanged(w, h);
+    m_pViewer->pCamera()->widgetScaleChanged(w, h);
 }
 
 void OpenglWidget::paintGL()
@@ -48,6 +51,15 @@ void OpenglWidget::showEvent(QShowEvent *ev)
 void OpenglWidget::mousePressEvent(QMouseEvent *ev)
 {
     m_lastMousePlace = ev->pos();
+    if(ev->buttons() == Qt::LeftButton){
+        QList <Model*> np;
+        np.push_back(MDM->root()->children()[0]);
+        if(Intersection::isMouseIntersection(np, ev->pos(), m_pViewer)){
+            qDebug() << "拾取到了";
+        }else{
+            qDebug() << "没拾取";
+        }
+    }
 }
 
 void OpenglWidget::mouseMoveEvent(QMouseEvent *ev)
@@ -55,11 +67,11 @@ void OpenglWidget::mouseMoveEvent(QMouseEvent *ev)
     auto nowPlace = ev->pos();
 
     if(ev->buttons() == Qt::LeftButton){
-        qDebug() << "chufa!";
+
     }else if(ev->buttons() == Qt::MiddleButton){
-        m_pCamera->moveTranslate(nowPlace - m_lastMousePlace);
+        m_pViewer->pCamera()->moveTranslate(nowPlace - m_lastMousePlace);
     }else if(ev->buttons() == Qt::RightButton){
-        m_pCamera->moveRotate(nowPlace - m_lastMousePlace);
+        m_pViewer->pCamera()->moveRotate(nowPlace - m_lastMousePlace);
     }
 
     m_lastMousePlace = nowPlace;
@@ -74,9 +86,9 @@ void OpenglWidget::mouseReleaseEvent(QMouseEvent *ev)
 void OpenglWidget::wheelEvent(QWheelEvent *ev)
 {
     if(ev->angleDelta().y() > 0){
-        m_pCamera->moveFront();
+        m_pViewer->pCamera()->moveFront();
     }else{
-        m_pCamera->moveBack();
+        m_pViewer->pCamera()->moveBack();
     }
     update();
 }
@@ -99,7 +111,7 @@ void OpenglWidget::drawModel(Model *model)
 
 void OpenglWidget::init()
 {
-    m_pCamera = new Camera;
+    m_pViewer = new Viewer(this);
 
     m_pUpdateTimer = new QTimer;
     connect(m_pUpdateTimer, &QTimer::timeout, this, &OpenglWidget::onTimerUpdateTimeout);
@@ -114,31 +126,23 @@ void OpenglWidget::init()
 
 void OpenglWidget::testInit()
 {
-    Model* newModel = new Model;
-    MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
-    SM->bindToBlingPhoneShader(newModel, m_pCamera);
-    newModel->pShader()->use();
-    newModel->updateMeshToShader();
-    newModel->pShader()->use();
-    MDM->addModel(newModel);
-    update();
+    {
+        Model* newModel = new Model;
+        MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
+        SM->bindToBlingPhoneShader(newModel, m_pViewer);
+        newModel->updateMeshToShader();
+        m_pViewer->updateAllDataToShader(newModel);
+        MDM->addModel(newModel);
+    }
+    {
+        Model* newModel = new Model;
+        MDM->readMesh(newModel->pMesh(), "C:/test1/test2.obj");
+        SM->bindToBlingPhoneShader(newModel, m_pViewer);
+        newModel->updateMeshToShader();
+        m_pViewer->updateAllDataToShader(newModel);
+        MDM->addModel(newModel);
+    }
 
-
-
-    MM->bindModelToStainlessSteelMaterial(newModel);
-
-    m_pLight = new Light;
-
-    newModel->pShader()->setVec3("lightColor", m_pLight->lightColor());
-    newModel->pShader()->setVec3("lightPos", m_pLight->lightPos());
-    newModel->pShader()->setVec3("viewPos", m_pCamera->cameraPos());
-
-
-    QMatrix4x4 mat1;
-    newModel->setMatrix(mat1);
-    newModel->pShader()->setMatrix("projection", m_pCamera->getPerspectiveMatrix());
-    newModel->pShader()->setMatrix("view", m_pCamera->getViewMatrix());
-    newModel->pShader()->unUse();
 
 }
 
@@ -155,14 +159,4 @@ void OpenglWidget::setUpdateTimeSinceLastUpdate(int newUpdateTimeSinceLastUpdate
 int OpenglWidget::updateTimeSinceLastUpdate() const
 {
     return m_updateTimeSinceLastUpdate;
-}
-
-Camera *OpenglWidget::pCamera() const
-{
-    return m_pCamera;
-}
-
-void OpenglWidget::setPCamera(Camera *newPCamera)
-{
-    m_pCamera = newPCamera;
 }

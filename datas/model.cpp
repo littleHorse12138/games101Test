@@ -1,5 +1,6 @@
 #include "model.h"
-
+#include "datas/boundingbox.h"
+#include "manager/materialmanager.h"
 Model::Model() {
     initializeOpenGLFunctions();
     init();
@@ -18,6 +19,7 @@ void Model::setPMesh(MeshData *newPMesh)
 void Model::init()
 {
     m_pMesh = new MeshData;
+    MM->bindModelToStainlessSteelMaterial(this);
 }
 
 unsigned int Model::vao() const
@@ -80,6 +82,7 @@ QMatrix4x4 Model::getMatrix()
 
 void Model::updateMeshToShader()
 {
+    m_pShader->use();
     auto data = pMesh()->getVertices();
     GLfloat* vertices = new GLfloat[data.size()];
     for(int i = 0; i < data.size(); i++){
@@ -111,4 +114,6 @@ void Model::updateMeshToShader()
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
+
+    pMesh()->pBoundingBox()->updateData(pMesh());
 }

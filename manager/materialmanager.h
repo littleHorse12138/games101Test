@@ -14,10 +14,10 @@ public:
 
     void bindModelToRubberMaterial(Model* model);
     void bindModelToStainlessSteelMaterial(Model* model);
+    void updateMaterialDataToShader(Model* model);
 protected:
     void init();
 
-    void updateMaterialDataToShader(Model* model);
     Material* getRubberMaterial();
     Material* getStainlessSteelMaterial();
 private:

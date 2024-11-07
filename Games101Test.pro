@@ -12,6 +12,8 @@ SOURCES += \
     canvas/fpswidget.cpp \
     canvas/openglwidget.cpp \
     canvas/simopenglwidget.cpp \
+    canvas/toolwidget.cpp \
+    datas/boundingbox.cpp \
     datas/camera.cpp \
     datas/face.cpp \
     datas/facehandle.cpp \
@@ -29,12 +31,15 @@ SOURCES += \
     manager/materialmanager.cpp \
     manager/meshdatamanager.cpp \
     manager/shaderprogrammanager.cpp \
+    tool/intersection.cpp \
     tool/tool.cpp
 
 HEADERS += \
     canvas/fpswidget.h \
     canvas/openglwidget.h \
     canvas/simopenglwidget.h \
+    canvas/toolwidget.h \
+    datas/boundingbox.h \
     datas/camera.h \
     datas/face.h \
     datas/facehandle.h \
@@ -51,10 +56,12 @@ HEADERS += \
     manager/materialmanager.h \
     manager/meshdatamanager.h \
     manager/shaderprogrammanager.h \
+    tool/intersection.h \
     tool/tool.h
 
 FORMS += \
     canvas/fpswidget.ui \
+    canvas/toolwidget.ui \
     mainwindow.ui
 
 # Default rules for deployment.

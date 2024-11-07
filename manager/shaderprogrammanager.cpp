@@ -15,14 +15,12 @@ ShaderProgramManager *ShaderProgramManager::getInstance()
     return instance;
 }
 
-void ShaderProgramManager::bindToBlingPhoneShader(Model *model, Camera *camera)
+void ShaderProgramManager::bindToBlingPhoneShader(Model *model, Viewer *viewer)
 {
-    camera->addModel(model);
     auto newBling = new BlingPhoneShader();
     model->setPShader(newBling);
     setShaderInitData(model);
-    newBling->setMatrix("view", camera->getViewMatrix());
-    newBling->setMatrix("projection", camera->getPerspectiveMatrix());
+    viewer->bindToViewer(model);
 }
 
 

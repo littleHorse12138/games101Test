@@ -9,6 +9,7 @@
 #include <QMap>
 class Model;
 class Material;
+class BoundingBox;
 class MeshData
 {
 public:
@@ -39,7 +40,13 @@ public:
     QVector3D normal(FaceHandle* vh);
     Material *material() const;
     void setMaterial(Material *newMaterial);
+    BoundingBox *pBoundingBox() const;
+    void setPBoundingBox(BoundingBox *newPBoundingBox);
 
+    QList<FaceHandle *> faceHandleList() const;
+
+protected:
+    void init();
 private:
     Model* m_pPar = nullptr;
 
@@ -56,6 +63,7 @@ private:
     QMap <VertexHandle*, QList <FaceHandle*>> m_vertexAndBoundFaceMap;
 
     Material* m_material;
+    BoundingBox* m_pBoundingBox = nullptr;
 };
 
 #endif // MESHDATA_H

@@ -2,7 +2,7 @@
 #define SHADERPROGRAMMANAGER_H
 
 #include <QObject>
-#include "datas/camera.h"
+#include "datas/viewer.h"
 #include "datas/shaderprogram.h"
 class Model;
 class ShaderProgramManager : public QObject
@@ -12,7 +12,7 @@ public:
     explicit ShaderProgramManager(QObject *parent = nullptr);
     static ShaderProgramManager* getInstance();
 
-    void bindToBlingPhoneShader(Model* model, Camera* camera);
+    void bindToBlingPhoneShader(Model* model, Viewer* camera);
 protected:
     void init();
 
