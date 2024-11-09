@@ -10,6 +10,7 @@ CONFIG += c++17
 
 SOURCES += \
     canvas/fpswidget.cpp \
+    canvas/modeltreewgt.cpp \
     canvas/openglwidget.cpp \
     canvas/simopenglwidget.cpp \
     canvas/toolwidget.cpp \
@@ -36,6 +37,7 @@ SOURCES += \
 
 HEADERS += \
     canvas/fpswidget.h \
+    canvas/modeltreewgt.h \
     canvas/openglwidget.h \
     canvas/simopenglwidget.h \
     canvas/toolwidget.h \
@@ -61,6 +63,7 @@ HEADERS += \
 
 FORMS += \
     canvas/fpswidget.ui \
+    canvas/modeltreewgt.ui \
     canvas/toolwidget.ui \
     mainwindow.ui
 

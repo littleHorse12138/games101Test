@@ -117,8 +117,8 @@ void OpenglWidget::init()
     connect(m_pUpdateTimer, &QTimer::timeout, this, &OpenglWidget::onTimerUpdateTimeout);
     m_pUpdateTimer->start(1);
 
-     m_pFpsWidget = new FpsWidget(this, this);
-     m_pFpsWidget->resize(200, 50);
+    m_pFpsWidget = new FpsWidget(this, this);
+    m_pFpsWidget->resize(200, 50);
     m_pFpsWidget->move(0,0);
 
      resize(800, 600);

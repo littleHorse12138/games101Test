@@ -30,6 +30,9 @@ public:
     unsigned int vao() const;
     void setVao(unsigned int newVao);
 
+    QString name() const;
+    void setName(const QString &newName);
+
 protected:
     void init();
 private:
@@ -44,6 +47,8 @@ private:
 
     unsigned int m_vao = -1;
     unsigned int m_vbo = -1;
+
+    QString m_name = "default name";
 };
 
 #endif // MODEL_H

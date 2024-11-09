@@ -22,6 +22,16 @@ void Model::init()
     MM->bindModelToStainlessSteelMaterial(this);
 }
 
+QString Model::name() const
+{
+    return m_name;
+}
+
+void Model::setName(const QString &newName)
+{
+    m_name = newName;
+}
+
 unsigned int Model::vao() const
 {
     return m_vao;
