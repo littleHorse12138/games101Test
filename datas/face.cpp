@@ -38,3 +38,4 @@ float Face::area()
     float area = sqrt(s * (s-a) * (s-b) * (s-c));
     return area;
 }
+

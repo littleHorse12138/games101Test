@@ -45,6 +45,14 @@ public:
 
     QList<FaceHandle *> faceHandleList() const;
 
+    void updateAllColor(QVector4D color);
+    QMap<FaceHandle *, QVector4D> specialColor() const;
+    void setSpecialColor(const QMap<FaceHandle *, QVector4D> &newSpecialColor);
+
+    QVector4D normalColor() const;
+    void setNormalColor(const QVector4D &newNormalColor);
+
+    QVector4D color(FaceHandle* fh);
 protected:
     void init();
 private:
@@ -64,6 +72,9 @@ private:
 
     Material* m_material;
     BoundingBox* m_pBoundingBox = nullptr;
+
+    QVector4D m_normalColor = QVector4D(1,0,0,1);
+    QMap <FaceHandle*, QVector4D> m_specialColor;
 };
 
 #endif // MESHDATA_H

@@ -9,10 +9,11 @@
 namespace Tool{
 QString suffix(QString path); //获取后缀名；
 float length(QPoint p);
-
+int random(int low, int high);
 }
 
 namespace GenerateModelTool{
-Model* generateBall(float radius);
+Model* generateBall();
+Model* generateCube();
 }
 #endif // TOOL_H

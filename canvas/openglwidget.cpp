@@ -56,10 +56,21 @@ void OpenglWidget::mousePressEvent(QMouseEvent *ev)
         np.push_back(MDM->root()->children()[0]);
         if(Intersection::isMouseIntersection(np, ev->pos(), m_pViewer)){
             qDebug() << "拾取到了";
+
+            {
+                Model* newModel = GenerateModelTool::generateBall();
+                SM->bindToBlingPhoneShader(newModel, m_pViewer);
+                newModel->pMesh()->setNormalColor(QVector4D(0,0,1,1));
+                newModel->updateMeshToShader();
+                m_pViewer->updateAllDataToShader(newModel);
+                MDM->addModel(newModel);
+            }
+
         }else{
             qDebug() << "没拾取";
         }
     }
+    update();
 }
 
 void OpenglWidget::mouseMoveEvent(QMouseEvent *ev)
@@ -130,18 +141,27 @@ void OpenglWidget::testInit()
         Model* newModel = new Model;
         MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
         SM->bindToBlingPhoneShader(newModel, m_pViewer);
+        newModel->pMesh()->setNormalColor(QVector4D(0,1,0,1));
         newModel->updateMeshToShader();
         m_pViewer->updateAllDataToShader(newModel);
         MDM->addModel(newModel);
     }
-    {
-        Model* newModel = new Model;
-        MDM->readMesh(newModel->pMesh(), "C:/test1/test2.obj");
-        SM->bindToBlingPhoneShader(newModel, m_pViewer);
-        newModel->updateMeshToShader();
-        m_pViewer->updateAllDataToShader(newModel);
-        MDM->addModel(newModel);
-    }
+    // {
+    //     Model* newModel = GenerateModelTool::generateBall();
+    //     SM->bindToBlingPhoneShader(newModel, m_pViewer);
+    //     newModel->pMesh()->setNormalColor(QVector4D(0,0,1,1));
+    //     newModel->updateMeshToShader();
+    //     m_pViewer->updateAllDataToShader(newModel);
+    //     MDM->addModel(newModel);
+    // }
+    // {
+    //     Model* newModel = new Model;
+    //     MDM->readMesh(newModel->pMesh(), "C:/test1/test2.obj");
+    //     SM->bindToBlingPhoneShader(newModel, m_pViewer);
+    //     newModel->updateMeshToShader();
+    //     m_pViewer->updateAllDataToShader(newModel);
+    //     MDM->addModel(newModel);
+    // }
 
 
 }

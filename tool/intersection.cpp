@@ -42,6 +42,7 @@ Model *Intersection::isMouseIntersection(QList<Model *> np, QPointF mousePos, Vi
             }
             QVector3D inter, normal;
             if(Intersection::isIntersect(startPoint, dir, p[0], p[1], p[2], inter, normal)){
+                qDebug() << "shiqudaole!!" << inter;
                 return model;
             }
         }

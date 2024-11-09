@@ -85,9 +85,10 @@ QList<float> MeshData::getVertices()
             vertices.append(n[0]);
             vertices.append(n[1]);
             vertices.append(n[2]);
-            vertices.append(1);
-            vertices.append(0);
-            vertices.append(0);
+            auto c = color(handle);
+            vertices.append(c[0]);
+            vertices.append(c[1]);
+            vertices.append(c[2]);
         }
     }
     return vertices;
@@ -143,9 +144,42 @@ void MeshData::init()
     m_pBoundingBox = new BoundingBoxAABB;
 }
 
+QVector4D MeshData::normalColor() const
+{
+    return m_normalColor;
+}
+
+void MeshData::setNormalColor(const QVector4D &newNormalColor)
+{
+    m_normalColor = newNormalColor;
+}
+
+QVector4D MeshData::color(FaceHandle *fh)
+{
+    if(m_specialColor.contains(fh)){
+        return m_specialColor[fh];
+    }
+    return m_normalColor;
+}
+
+QMap<FaceHandle *, QVector4D> MeshData::specialColor() const
+{
+    return m_specialColor;
+}
+
+void MeshData::setSpecialColor(const QMap<FaceHandle *, QVector4D> &newSpecialColor)
+{
+    m_specialColor = newSpecialColor;
+}
+
 QList<FaceHandle *> MeshData::faceHandleList() const
 {
     return m_faceHandleList;
+}
+
+void MeshData::updateAllColor(QVector4D color)
+{
+
 }
 
 BoundingBox *MeshData::pBoundingBox() const
