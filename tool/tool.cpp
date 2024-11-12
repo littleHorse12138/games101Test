@@ -17,7 +17,7 @@ Model *GenerateModelTool::generateBall()
 {
     Model* model = new Model;
     int acc = 35;
-    float r = 7;
+    float r = 0.5;
     QList <QList <VertexHandle*>> vhs;
 
     float vAngle;

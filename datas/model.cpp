@@ -60,7 +60,7 @@ void Model::setNodeMask(int newNodeMask)
 
 void Model::addChild(Model *child)
 {
-    m_children.prepend(child);
+    m_children.append(child);
 }
 
 QList<Model *> Model::children() const
@@ -109,15 +109,12 @@ void Model::updateMeshToShader(int x)
     // int x = 1;
     if(m_vao == 1000000){
         OW->glGenVertexArrays(1, &VAO);
-        qDebug() << "updateMesh1" << OW->glGetError();
 
         OW->glGenBuffers(1, &VBO);
-        qDebug() << "updateMesh2" << OW->glGetError();
 
         m_vao = VAO;
         m_vbo = VBO;
     }else{
-        qDebug() << "use old";
         VAO = m_vao;
         VBO = m_vbo;
 
@@ -127,8 +124,6 @@ void Model::updateMeshToShader(int x)
 
     OW->glBindBuffer(GL_ARRAY_BUFFER, VBO);
     OW->glBufferData(GL_ARRAY_BUFFER, sizeof(float)*data.size(), vertices, GL_STATIC_DRAW);
-    qDebug() << "updateMesh4" << OW->glGetError();
-
     OW->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(0 * sizeof(float)));
     OW->glEnableVertexAttribArray(0);
 
@@ -137,8 +132,6 @@ void Model::updateMeshToShader(int x)
 
     OW->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
     OW->glEnableVertexAttribArray(2);
-    qDebug() << "updateMesh5" << OW->glGetError();
-
     // OW->glBindBuffer(GL_ARRAY_BUFFER, 0);
     // OW->glBindVertexArray(0);
 }
@@ -163,6 +156,5 @@ void Model::updateMeshToShader2(int x)
 
     OW->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
     OW->glEnableVertexAttribArray(2);
-    qDebug() << "updateMesh5" << OW->glGetError();
 
 }

@@ -10,6 +10,7 @@
 class Model;
 class Light;
 class Viewer;
+class ModelTreeWgt;
 class OpenglWidget : public QOpenGLWidget, public QOpenGLFunctions_3_3_Core
 {
     Q_OBJECT
@@ -21,7 +22,10 @@ public:
 
     void setUpdateTimeSinceLastUpdate(int newUpdateTimeSinceLastUpdate);
 
-    void buildNewModel();
+    Model* buildNewModel();
+    ModelTreeWgt *pModelTreeWgt() const;
+    void setPModelTreeWgt(ModelTreeWgt *newPModelTreeWgt);
+
 protected:
     void drawModel(Model* model);
 
@@ -48,6 +52,8 @@ private:
     int m_updateTimeSinceLastUpdate = 0;
 
     FpsWidget* m_pFpsWidget = nullptr;
+
+    ModelTreeWgt* m_pModelTreeWgt = nullptr;
 };
 #define OW OpenglWidget::getInstance()
 #endif // OPENGLWIDGET_H

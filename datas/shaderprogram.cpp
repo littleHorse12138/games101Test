@@ -22,12 +22,6 @@ void ShaderProgram::init()
 void ShaderProgram::use()
 {
     glUseProgram(m_shaderProgramID);
-    auto err = glGetError();
-    int proId;
-    glGetIntegerv(GL_CURRENT_PROGRAM, &proId);
-    if(err != 0 || proId != m_shaderProgramID){
-        qDebug() << "error happen" << err << proId << m_shaderProgramID;
-    }
 }
 
 void ShaderProgram::unUse()

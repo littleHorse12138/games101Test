@@ -5,7 +5,7 @@
 #include "datas/boundingbox.h"
 #include "canvas/openglwidget.h"
 
-Model *Intersection::isMouseIntersection(QList<Model *> np, QPointF mousePos, Viewer *viewer)
+Model *Intersection::isMouseIntersection(QList<Model *> np, QPointF mousePos, Viewer *viewer, QVector3D& inter)
 {
     auto camera = viewer->pCamera();
 
@@ -21,12 +21,27 @@ Model *Intersection::isMouseIntersection(QList<Model *> np, QPointF mousePos, Vi
     y = 1 - y;
     x = (x * 2) - 1;
     y = (y * 2) - 1;
-    QVector3D tempDir(x, y, 1);
-    auto vp = camera->getPerspectiveMatrix() * camera->getViewMatrix();
-    tempDir = vp.inverted() * tempDir;
-    dir = tempDir;
-    dir.normalize();
 
+
+    auto vp = camera->getPerspectiveMatrix() * camera->getViewMatrix();
+    auto MVPInverse = vp.inverted();
+    // 假设你已经有了MVP矩阵的逆矩阵：MVPInverse
+    QVector4D rayNDC(x, y, 1.0, 1.0); // NDC坐标
+    QVector4D rayClip = MVPInverse * rayNDC; // 转换到裁剪空间
+    rayClip = rayClip / rayClip.w(); // 归一化
+
+    // 射线方向
+    QVector3D rayDir = QVector3D(rayClip) - camera->cameraPos(); // 从原点到射线方向
+
+    // 射线起点
+    QVector4D rayOrigin = MVPInverse * QVector4D(x, y, -1.0, 1.0); // 从NDC到世界空间
+    rayOrigin = rayOrigin / rayOrigin.w(); // 归一化
+
+    startPoint = QVector3D(rayOrigin);
+    dir = rayDir;
+
+    float minDis = 1000000;
+    Model* minModel = nullptr;
     for(auto model: np){
         if(!model || !model->pShader() || !model->nodeMask()
             /*|| !model->pMesh()->pBoundingBox()->isIntersection(startPoint, dir)*/){
@@ -40,12 +55,18 @@ Model *Intersection::isMouseIntersection(QList<Model *> np, QPointF mousePos, Vi
                 auto v = model->pMesh()->vertex(vh);
                 p[i] = v->pos();
             }
-            QVector3D inter, normal;
-            if(Intersection::isIntersect(startPoint, dir, p[0], p[1], p[2], inter, normal)){
-                qDebug() << "shiqudaole!!" << inter;
-                return model;
+            QVector3D normal;
+            QVector3D nowInter;
+            if(Intersection::isIntersect(startPoint, dir, p[0], p[1], p[2], nowInter, normal)){
+                auto nowDis = (nowInter - viewer->pCamera()->cameraPos()).length();
+                if(nowDis < minDis){
+                    minDis = nowDis;
+                    inter = nowInter;
+                    minModel = model;
+                }
             }
         }
+        return minModel;
     }
 
     return nullptr;

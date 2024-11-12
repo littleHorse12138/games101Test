@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="1" column="1">
-     <widget class="ModelTreeWgt" name="widget_2" native="true">
+     <widget class="ModelTreeWgt" name="m_pModelTreeWIdget" native="true">
       <property name="minimumSize">
        <size>
         <width>200</width>

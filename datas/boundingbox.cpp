@@ -1,8 +1,16 @@
 #include "boundingbox.h"
 #include "datas/meshdata.h"
+#include "datas/model.h"
 BoundingBox::BoundingBox(QObject *parent)
     : QObject{parent}
 {}
+
+Model *BoundingBox::generateBoundingBoxModel()
+{
+    Model* model = new Model;
+
+    return model;
+}
 
 void BoundingBoxAABB::updateData(MeshData *data)
 {

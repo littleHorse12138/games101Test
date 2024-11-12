@@ -15,5 +15,6 @@ int random(int low, int high);
 namespace GenerateModelTool{
 Model* generateBall();
 Model* generateCube();
+Model* generateCylinder();
 }
 #endif // TOOL_H

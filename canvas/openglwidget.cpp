@@ -51,55 +51,17 @@ void OpenglWidget::showEvent(QShowEvent *ev)
 
 void OpenglWidget::mousePressEvent(QMouseEvent *ev)
 {
-    qDebug() << "mousepress";
-    if(ev->buttons() == Qt::LeftButton){
-        qDebug() << "删除";
-        auto model = MDM->root()->children()[0];
-        int fn = model->pMesh()->faceNum();
-        int cnt = fn / 5;
-        for(int i = 0; i < cnt; i++){
-            model->pMesh()->removeFace(model->pMesh()->faceHandleList().last());
-        }
-        model->pMesh()->setNormalColor(QVector4D(0,1,1,1));
-        model->updateMeshToShader();
-    }else if(ev->buttons() == Qt::MiddleButton){
-        qDebug() << "新建";
-        buildNewModel();
-
-    }
     m_lastMousePlace = ev->pos();
-    return;
     if(ev->buttons() == Qt::LeftButton){
         QList <Model*> np;
         np.push_back(MDM->root()->children()[0]);
-        if(Intersection::isMouseIntersection(np, ev->pos(), m_pViewer)){
-            qDebug() << "拾取到了";
-
-            auto model = MDM->root()->children()[0];
-            int fn = model->pMesh()->faceNum();
-            int cnt = fn / 5;
-            for(int i = 0; i < cnt; i++){
-                model->pMesh()->removeFace(model->pMesh()->faceHandleList().last());
-            }
-             model->updateMeshToShader();
-
-            // {
-            //     GLint flags;
-            //     glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-            //     if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-            //         // 上下文是调试上下文
-            //         qDebug() << "tiaoshi yes2";
-            //     }else{
-            //         qDebug() << "tiaoshi no2" << glGetString(GL_VERSION);
-            //     }
-            //     Model* newModel = GenerateModelTool::generateBall();
-            //     SM->bindToBlingPhoneShader(newModel, m_pViewer);
-            //     newModel->updateMeshToShader();
-            //     m_pViewer->updateAllDataToShader(newModel);
-            //     newModel->pMesh()->setNormalColor(QVector4D(0,0,1,1));
-            //     MDM->addModel(newModel);
-            // }
-
+        QVector3D inter;
+        if(Intersection::isMouseIntersection(np, ev->pos(), m_pViewer, inter)){
+            qDebug() << "拾取到了" << inter;
+            auto model = buildNewModel();
+            QMatrix4x4 mat;
+            mat.translate(inter);
+            model->setMatrix(mat);
         }else{
             qDebug() << "没拾取";
         }
@@ -182,15 +144,15 @@ void OpenglWidget::testInit()
     }else{
         qDebug() << "tiaoshi no1" << glGetString(GL_VERSION);
     }
-    // {
-    //     Model* newModel = new Model;
-    //     MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
-    //     SM->bindToBlingPhoneShader(newModel, m_pViewer);
-    //     newModel->pMesh()->setNormalColor(QVector4D(0,1,0,1));
-    //     newModel->updateMeshToShader();
-    //     m_pViewer->updateAllDataToShader(newModel);
-    //     MDM->addModel(newModel);
-    // }
+    {
+        Model* newModel = new Model;
+        MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
+        SM->bindToBlingPhoneShader(newModel, m_pViewer);
+        newModel->pMesh()->setNormalColor(QVector4D(0,1,0,1));
+        newModel->updateMeshToShader();
+        m_pViewer->updateAllDataToShader(newModel);
+        MDM->addModel(newModel);
+    }
     // buildNewModel();
 
 
@@ -207,31 +169,32 @@ void OpenglWidget::testInit()
 
 }
 
-void OpenglWidget::buildNewModel()
+Model* OpenglWidget::buildNewModel()
 {
-    {
-        qDebug() << "step 0";
-        glUseProgram(0);
-        qDebug() << "step 1";
-        Model* newModel = GenerateModelTool::generateBall();
-        qDebug() << "step 2";
-        SM->bindToBlingPhoneShader(newModel, m_pViewer);
-        newModel->pShader()->use();
-        qDebug() << "step 3";
-        newModel->updateMeshToShader();
-        qDebug() << "step 4";
-        m_pViewer->updateAllDataToShader(newModel);
-        qDebug() << "step 5";
-        newModel->pMesh()->setNormalColor(QVector4D(0,0,1,1));
-        qDebug() << "step 6";
-        MDM->addModel(newModel);
-        qDebug() << "step 7";
-    }
+    glUseProgram(0);
+    Model* newModel = GenerateModelTool::generateBall();
+    SM->bindToBlingPhoneShader(newModel, m_pViewer);
+    newModel->pShader()->use();
+    newModel->updateMeshToShader();
+    m_pViewer->updateAllDataToShader(newModel);
+    newModel->pMesh()->setNormalColor(QVector4D(0,0,1,1));
+    MDM->addModel(newModel);
+    return newModel;
 }
 
 void OpenglWidget::onTimerUpdateTimeout()
 {
     update();
+}
+
+ModelTreeWgt *OpenglWidget::pModelTreeWgt() const
+{
+    return m_pModelTreeWgt;
+}
+
+void OpenglWidget::setPModelTreeWgt(ModelTreeWgt *newPModelTreeWgt)
+{
+    m_pModelTreeWgt = newPModelTreeWgt;
 }
 
 void OpenglWidget::setUpdateTimeSinceLastUpdate(int newUpdateTimeSinceLastUpdate)

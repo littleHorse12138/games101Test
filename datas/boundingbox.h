@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QVector3D>
+class Model;
 class MeshData;
 class BoundingBox : public QObject
 {
@@ -12,6 +13,7 @@ public:
 
     virtual void updateData(MeshData* data) = 0;
     virtual bool isIntersection(QVector3D start, QVector3D dir) = 0;
+    virtual Model* generateBoundingBoxModel();
 };
 
 class BoundingBoxAABB: public BoundingBox
