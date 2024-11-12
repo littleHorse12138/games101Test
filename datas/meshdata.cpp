@@ -144,6 +144,11 @@ void MeshData::init()
     m_pBoundingBox = new BoundingBoxAABB;
 }
 
+void MeshData::setFaceNum(int newFaceNum)
+{
+    m_faceNum = newFaceNum;
+}
+
 QVector4D MeshData::normalColor() const
 {
     return m_normalColor;
@@ -160,6 +165,18 @@ QVector4D MeshData::color(FaceHandle *fh)
         return m_specialColor[fh];
     }
     return m_normalColor;
+}
+
+void MeshData::removeFace(FaceHandle *fh)
+{
+    m_faceMap.remove(fh);
+    m_faceHandleList.removeOne(fh);
+    for(auto &key: m_vertexAndBoundFaceMap.keys()){
+        auto v = m_vertexAndBoundFaceMap[key];
+        v.removeOne(fh);
+        m_vertexAndBoundFaceMap[key] = v;
+    }
+    // m_faceNum--;
 }
 
 QMap<FaceHandle *, QVector4D> MeshData::specialColor() const

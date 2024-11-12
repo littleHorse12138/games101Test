@@ -16,7 +16,7 @@ float Tool::length(QPoint p)
 Model *GenerateModelTool::generateBall()
 {
     Model* model = new Model;
-    int acc = 50;
+    int acc = 35;
     float r = 7;
     QList <QList <VertexHandle*>> vhs;
 
@@ -33,14 +33,12 @@ Model *GenerateModelTool::generateBall()
             float y = xy * sin(hAngle);
             QVector3D p(x, y, h);
             vhs1.append(model->pMesh()->addVertex(p));
-            qDebug() << "ij" << i << j << p;
         }
         vhs.append(vhs1);
     }
 
     int floorCnt = vhs.size();
     int oneCnt = vhs[0].size();
-    qDebug() << "in here" << floorCnt << oneCnt;
     for(int i = 0; i < floorCnt - 1; i++){
         for(int j = 0; j < oneCnt; j++){
             int n = j+1==oneCnt?0:j+1;

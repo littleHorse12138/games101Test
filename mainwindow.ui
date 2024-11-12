@@ -15,9 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="1" column="0">
-     <widget class="OpenglWidget" name="widget_3" native="true"/>
-    </item>
     <item row="1" column="1">
      <widget class="ModelTreeWgt" name="widget_2" native="true">
       <property name="minimumSize">
@@ -35,7 +32,7 @@
      </widget>
     </item>
     <item row="0" column="0" colspan="2">
-     <widget class="ToolWidget" name="widget" native="true">
+     <widget class="ToolWidget" name="m_pToolWidget" native="true">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -49,6 +46,9 @@
        </size>
       </property>
      </widget>
+    </item>
+    <item row="1" column="0">
+     <layout class="QVBoxLayout" name="m_pVLay"/>
     </item>
    </layout>
   </widget>
@@ -65,12 +65,6 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <customwidgets>
-  <customwidget>
-   <class>OpenglWidget</class>
-   <extends>QWidget</extends>
-   <header>canvas/openglwidget.h</header>
-   <container>1</container>
-  </customwidget>
   <customwidget>
    <class>ToolWidget</class>
    <extends>QWidget</extends>

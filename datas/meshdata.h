@@ -53,6 +53,10 @@ public:
     void setNormalColor(const QVector4D &newNormalColor);
 
     QVector4D color(FaceHandle* fh);
+
+    void removeFace(FaceHandle* fh);
+    void setFaceNum(int newFaceNum);
+
 protected:
     void init();
 private:

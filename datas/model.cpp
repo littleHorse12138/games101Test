@@ -1,8 +1,9 @@
 #include "model.h"
 #include "datas/boundingbox.h"
 #include "manager/materialmanager.h"
+#include "canvas/openglwidget.h"
 Model::Model() {
-    initializeOpenGLFunctions();
+    // initializeOpenGLFunctions();
     init();
 }
 
@@ -32,6 +33,11 @@ void Model::setName(const QString &newName)
     m_name = newName;
 }
 
+void Model::useVAO()
+{
+    OW->glBindVertexArray(m_vao);
+}
+
 unsigned int Model::vao() const
 {
     return m_vao;
@@ -54,7 +60,7 @@ void Model::setNodeMask(int newNodeMask)
 
 void Model::addChild(Model *child)
 {
-    m_children.append(child);
+    m_children.prepend(child);
 }
 
 QList<Model *> Model::children() const
@@ -90,7 +96,7 @@ QMatrix4x4 Model::getMatrix()
     return m_matrix;
 }
 
-void Model::updateMeshToShader()
+void Model::updateMeshToShader(int x)
 {
     m_pShader->use();
     auto data = pMesh()->getVertices();
@@ -98,32 +104,65 @@ void Model::updateMeshToShader()
     for(int i = 0; i < data.size(); i++){
         vertices[i] = data[i];
     }
-    qDebug() << "update mesh" << sizeof(data);
-    GLuint VAO;
-    glGenVertexArrays(1, &VAO);
+    GLuint VAO = 1000000;
+    GLuint VBO = 1000000;
+    // int x = 1;
+    if(m_vao == 1000000){
+        OW->glGenVertexArrays(1, &VAO);
+        qDebug() << "updateMesh1" << OW->glGetError();
 
-    GLuint VBO;
-    glGenBuffers(1, &VBO);
+        OW->glGenBuffers(1, &VBO);
+        qDebug() << "updateMesh2" << OW->glGetError();
 
-    m_vao = VAO;
-    m_vbo = VBO;
+        m_vao = VAO;
+        m_vbo = VBO;
+    }else{
+        qDebug() << "use old";
+        VAO = m_vao;
+        VBO = m_vbo;
 
-    glBindVertexArray(VAO);
+    }
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*data.size(), vertices, GL_STATIC_DRAW);
+    OW->glBindVertexArray(VAO);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(0 * sizeof(float)));
-    glEnableVertexAttribArray(0);
+    OW->glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    OW->glBufferData(GL_ARRAY_BUFFER, sizeof(float)*data.size(), vertices, GL_STATIC_DRAW);
+    qDebug() << "updateMesh4" << OW->glGetError();
 
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    OW->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(0 * sizeof(float)));
+    OW->glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+    OW->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+    OW->glEnableVertexAttribArray(1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
+    OW->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+    OW->glEnableVertexAttribArray(2);
+    qDebug() << "updateMesh5" << OW->glGetError();
 
-    pMesh()->pBoundingBox()->updateData(pMesh());
+    // OW->glBindBuffer(GL_ARRAY_BUFFER, 0);
+    // OW->glBindVertexArray(0);
+}
+
+void Model::updateMeshToShader2(int x)
+{
+    m_pShader->use();
+    GLuint VAO = 1000000;
+    GLuint VBO = 1000000;
+
+    VAO = m_vao;
+    VBO = m_vbo;
+
+    OW->glBindVertexArray(VAO);
+    OW->glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    OW->glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(0 * sizeof(float)));
+    OW->glEnableVertexAttribArray(0);
+
+    OW->glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+    OW->glEnableVertexAttribArray(1);
+
+    OW->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
+    OW->glEnableVertexAttribArray(2);
+    qDebug() << "updateMesh5" << OW->glGetError();
+
 }

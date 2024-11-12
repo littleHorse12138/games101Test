@@ -21,6 +21,7 @@ public:
 
     void setUpdateTimeSinceLastUpdate(int newUpdateTimeSinceLastUpdate);
 
+    void buildNewModel();
 protected:
     void drawModel(Model* model);
 

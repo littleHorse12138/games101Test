@@ -22,6 +22,12 @@ void ShaderProgram::init()
 void ShaderProgram::use()
 {
     glUseProgram(m_shaderProgramID);
+    auto err = glGetError();
+    int proId;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &proId);
+    if(err != 0 || proId != m_shaderProgramID){
+        qDebug() << "error happen" << err << proId << m_shaderProgramID;
+    }
 }
 
 void ShaderProgram::unUse()
@@ -52,13 +58,16 @@ void ShaderProgram::setMatrix(QString name, QMatrix4x4 data)
     use();
     auto matrixAsFloatArray = data.constData();
     auto location = glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str());
+    // qDebug() << "location!!" << name << location;
     glUniformMatrix4fv(location, 1, GL_FALSE, matrixAsFloatArray);
 }
 
 void ShaderProgram::setVec3(QString name, QVector3D data)
 {
     use();
-    glUniform3f(glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str()), data[0], data[1], data[2]);
+    auto location = glGetUniformLocation(m_shaderProgramID, name.toStdString().c_str());
+    // qDebug() << "location!!" << name << location;
+    glUniform3f(location, data[0], data[1], data[2]);
 }
 
 void ShaderProgram::createShader()
@@ -77,6 +86,16 @@ void ShaderProgram::createShader()
 
     glDeleteShader(m_vertexShaderID);
     glDeleteShader(m_fragmentShaderID);
+}
+
+int ShaderProgram::shaderProgramID() const
+{
+    return m_shaderProgramID;
+}
+
+void ShaderProgram::setShaderProgramID(int newShaderProgramID)
+{
+    m_shaderProgramID = newShaderProgramID;
 }
 
 int ShaderProgram::vbo() const

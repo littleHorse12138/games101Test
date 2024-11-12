@@ -38,6 +38,9 @@ public:
 
     virtual void initializeGL();
 
+    int shaderProgramID() const;
+    void setShaderProgramID(int newShaderProgramID);
+
 protected:
     //初始化相关
     void loadShaders(); //读取文件里的shader

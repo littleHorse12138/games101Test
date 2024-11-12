@@ -5,7 +5,7 @@
 #include "shaderprogram.h"
 #include <QMatrix4x4>
 #include "QOpenGLFunctions_3_3_Core"
-class Model:public QOpenGLFunctions_3_3_Core
+class Model
 {
 public:
     Model();
@@ -18,7 +18,8 @@ public:
     void setMatrix(QMatrix4x4 mat);
     QMatrix4x4 getMatrix();
 
-    void updateMeshToShader();
+    void updateMeshToShader(int x = 1);
+    void updateMeshToShader2(int x = 1);
     QList<Model *> children() const;
     void setChildren(const QList<Model *> &newChildren);
 
@@ -33,8 +34,10 @@ public:
     QString name() const;
     void setName(const QString &newName);
 
+    void useVAO();
 protected:
     void init();
+
 private:
     QList <Model*> m_children;
     Model* m_pParent = nullptr;
@@ -45,8 +48,8 @@ private:
     MeshData* m_pMesh = nullptr;
     ShaderProgram* m_pShader = nullptr;
 
-    unsigned int m_vao = -1;
-    unsigned int m_vbo = -1;
+    unsigned int m_vao = 1000000;
+    unsigned int m_vbo = 1000000;
 
     QString m_name = "default name";
 };
