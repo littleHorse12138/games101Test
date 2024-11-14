@@ -17,4 +17,13 @@ Model* generateBall();
 Model* generateCube();
 Model* generateCylinder();
 }
+
+class LoopSubdivisionTool{
+public:
+    LoopSubdivisionTool(Model* model);
+    void doLoop();
+private:
+    Model* m_pModel = nullptr;
+};
+
 #endif // TOOL_H

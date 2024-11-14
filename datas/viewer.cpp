@@ -81,6 +81,10 @@ void Viewer::updateAllDataToShader(Model* model)
     model->pShader()->setFloat("materialShininess", m->shininess());
     model->pShader()->setVec3("materialDiffuse", m->diffuse());
     model->pShader()->setVec3("materialAmbient", m->ambient());
+
+    if(model->pPolygonModel()){
+        updateAllDataToShader(model->pPolygonModel());
+    }
 }
 
 OpenglWidget *Viewer::pParWgt() const

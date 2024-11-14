@@ -47,6 +47,58 @@ FaceHandle *MeshData::addFace(VertexHandle *v1, VertexHandle *v2, VertexHandle *
     m_vertexAndBoundFaceMap[v1].append(handle);
     m_vertexAndBoundFaceMap[v2].append(handle);
     m_vertexAndBoundFaceMap[v3].append(handle);
+
+    {
+        auto edgeHandle = findEdge(v1, v2);
+        if(!edgeHandle){
+            Edge* edge = new Edge(v1, v2);
+            edgeHandle = new EdgeHandle;
+            m_edgeHandleList.append(edgeHandle);
+            m_edgeMap.insert(edgeHandle, edge);
+            m_vertexAndBoundVertexMap[v1].append(v2);
+            m_vertexAndBoundVertexMap[v2].append(v1);
+            m_vertexAndBoundEdgeMap[v1].append(edgeHandle);
+            m_vertexAndBoundEdgeMap[v2].append(edgeHandle);
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }else{
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }
+        m_faceAndBoundEdgeMap[handle].append(edgeHandle);
+    }
+    {
+        auto edgeHandle = findEdge(v1, v3);
+        if(!edgeHandle){
+            Edge* edge = new Edge(v1, v3);
+            edgeHandle = new EdgeHandle;
+            m_edgeHandleList.append(edgeHandle);
+            m_edgeMap.insert(edgeHandle, edge);
+            m_vertexAndBoundVertexMap[v1].append(v3);
+            m_vertexAndBoundVertexMap[v3].append(v1);
+            m_vertexAndBoundEdgeMap[v1].append(edgeHandle);
+            m_vertexAndBoundEdgeMap[v3].append(edgeHandle);
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }else{
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }
+        m_faceAndBoundEdgeMap[handle].append(edgeHandle);
+    }
+    {
+        auto edgeHandle = findEdge(v2, v3);
+        if(!edgeHandle){
+            Edge* edge = new Edge(v2, v3);
+            edgeHandle = new EdgeHandle;
+            m_edgeHandleList.append(edgeHandle);
+            m_edgeMap.insert(edgeHandle, edge);
+            m_vertexAndBoundVertexMap[v2].append(v3);
+            m_vertexAndBoundVertexMap[v3].append(v2);
+            m_vertexAndBoundEdgeMap[v2].append(edgeHandle);
+            m_vertexAndBoundEdgeMap[v3].append(edgeHandle);
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }else{
+            m_edgeAndBoundFaceMap[edgeHandle].append(handle);
+        }
+        m_faceAndBoundEdgeMap[handle].append(edgeHandle);
+    }
     return handle;
 }
 
@@ -63,6 +115,11 @@ Face *MeshData::face(FaceHandle *handle)
 Vertex *MeshData::vertex(VertexHandle *handle)
 {
     return m_vertexMap[handle];
+}
+
+Edge *MeshData::edge(EdgeHandle *handle)
+{
+    return m_edgeMap[handle];
 }
 
 int MeshData::faceNum() const
@@ -102,6 +159,51 @@ int MeshData::vertexNum() const
 QList<FaceHandle *> MeshData::getBoundingFace(VertexHandle *vh)
 {
     return m_vertexAndBoundFaceMap[vh];
+}
+
+QList<EdgeHandle *> MeshData::getBoundingEdge(VertexHandle *vh)
+{
+    return m_vertexAndBoundEdgeMap[vh];
+}
+
+QList<VertexHandle *> MeshData::getBoundingVertex(VertexHandle *vh)
+{
+    return m_vertexAndBoundVertexMap[vh];
+}
+
+QList<FaceHandle *> MeshData::getBoundingFace(EdgeHandle *vh)
+{
+    return m_edgeAndBoundFaceMap[vh];
+}
+
+EdgeHandle* MeshData::findEdge(VertexHandle *vh1, VertexHandle *vh2)
+{
+    if(getBoundingVertex(vh1).contains(vh2)){
+        for(auto edgeHandle: getBoundingEdge(vh1)){
+            auto edge1 = edge(edgeHandle);
+            if(edge1->cmp(vh1, vh2)){
+                return edgeHandle;
+            }
+        }
+    }
+    return nullptr;
+}
+
+VertexHandle *MeshData::getOppoVertexHandle(FaceHandle *faceHandle, EdgeHandle *edgeHandle)
+{
+    auto f = face(faceHandle);
+    auto e = edge(edgeHandle);
+    for(int i = 0; i < 3; i++){
+        auto vh = f->vh(i);
+        if(e->vertexHandle(0) == vh){
+            continue;
+        }
+        if(e->vertexHandle(1) == vh){
+            continue;
+        }
+        return vh;
+    }
+    return nullptr;
 }
 
 QVector3D MeshData::normal(VertexHandle *vh)
@@ -144,9 +246,48 @@ void MeshData::init()
     m_pBoundingBox = new BoundingBoxAABB;
 }
 
+QList<EdgeHandle *> MeshData::edgeHandleList() const
+{
+    return m_edgeHandleList;
+}
+
 void MeshData::setFaceNum(int newFaceNum)
 {
     m_faceNum = newFaceNum;
+}
+
+void MeshData::removeVertex(VertexHandle *vh)
+{
+    m_vertexMap.remove(vh);
+    m_vertexHandleList.removeOne(vh);
+    m_vertexAndBoundFaceMap.remove(vh);
+}
+
+void MeshData::clear()
+{
+    for(auto f: m_faceHandleList){
+        removeFace(f);
+    }
+    for(auto v: m_vertexHandleList){
+        removeVertex(v);
+    }
+}
+
+void MeshData::assign(MeshData* data)
+{
+    QList <VertexHandle*> oldVhs = data->m_vertexHandleList;
+    QList <VertexHandle*> vhs;
+    for(auto v: data->m_vertexHandleList){
+        auto pos = data->vertex(v)->pos();
+        vhs.append(addVertex(pos));
+    }
+    for(auto fh: data->m_faceHandleList){
+        auto f = data->face(fh);
+        auto index0 = oldVhs.indexOf(f->vh(0));
+        auto index1 = oldVhs.indexOf(f->vh(1));
+        auto index2 = oldVhs.indexOf(f->vh(2));
+        addFace(vhs[index0], vhs[index1], vhs[index2]);
+    }
 }
 
 QVector4D MeshData::normalColor() const
@@ -176,7 +317,7 @@ void MeshData::removeFace(FaceHandle *fh)
         v.removeOne(fh);
         m_vertexAndBoundFaceMap[key] = v;
     }
-    // m_faceNum--;
+     m_faceNum--;
 }
 
 QMap<FaceHandle *, QVector4D> MeshData::specialColor() const

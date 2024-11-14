@@ -21,6 +21,10 @@ void ShaderProgramManager::bindToBlingPhoneShader(Model *model, Viewer *viewer)
     model->setPShader(newBling);
     setShaderInitData(model);
     viewer->bindToViewer(model);
+
+    if(model->pPolygonModel()){
+        bindToBlingPhoneShader(model->pPolygonModel(), viewer);
+    }
 }
 
 

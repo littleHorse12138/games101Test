@@ -8,6 +8,9 @@
 class Model
 {
 public:
+    enum DrawType{
+
+    };
     Model();
     MeshData *pMesh() const;
     void setPMesh(MeshData *newPMesh);
@@ -27,6 +30,7 @@ public:
     void setNodeMask(int newNodeMask);
 
     void addChild(Model* child);
+    bool removeChild(Model* child);
 
     unsigned int vao() const;
     void setVao(unsigned int newVao);
@@ -35,13 +39,26 @@ public:
     void setName(const QString &newName);
 
     void useVAO();
+
+
+    bool bIsLineModel() const;
+    void setBIsLineModel(bool newBIsLineModel);
+
+    void initBBModelAndPolygonModel();
+    Model *pPolygonModel() const;
+    void setPPolygonModel(Model *newPPolygonModel);
+
+    Model *pBBModel() const;
+    void setPBBModel(Model *newPBBModel);
+
 protected:
     void init();
 
 private:
     QList <Model*> m_children;
     Model* m_pParent = nullptr;
-
+    Model* m_pBBModel = nullptr; //包围盒
+    Model* m_pPolygonModel = nullptr; //线框
     int m_nodeMask = 1;
     QMatrix4x4 m_matrix;
 
@@ -52,6 +69,10 @@ private:
     unsigned int m_vbo = 1000000;
 
     QString m_name = "default name";
+
+    bool m_bIsLineModel = false;
+
+
 };
 
 #endif // MODEL_H

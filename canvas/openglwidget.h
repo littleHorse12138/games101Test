@@ -26,6 +26,9 @@ public:
     ModelTreeWgt *pModelTreeWgt() const;
     void setPModelTreeWgt(ModelTreeWgt *newPModelTreeWgt);
 
+    Viewer *pViewer() const;
+    void setPViewer(Viewer *newPViewer);
+
 protected:
     void drawModel(Model* model);
 

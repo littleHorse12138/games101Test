@@ -66,6 +66,7 @@ bool MeshDataManager::readObj(MeshData *data, QString path)
             for(auto &l: list){
                 l = l.split("/").first();
             }
+
             data->addFace(data->vertexHandle(list[1].toInt() - 1),
                           data->vertexHandle(list[2].toInt() - 1),
                           data->vertexHandle(list[3].toInt() - 1));

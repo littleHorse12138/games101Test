@@ -22,6 +22,7 @@ protected:
     void onBtnShowOrHideClicked();
     void onBtnShowGridClicked();
     void onBtnShowBoundingBoxClicked();
+    void onBtnLoopSubdivisionClicked();
 private:
     Ui::OneModelWidget *ui;
     Model* m_pModel = nullptr;

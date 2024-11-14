@@ -17,6 +17,8 @@ SOURCES += \
     canvas/toolwidget.cpp \
     datas/boundingbox.cpp \
     datas/camera.cpp \
+    datas/edge.cpp \
+    datas/edgehandle.cpp \
     datas/face.cpp \
     datas/facehandle.cpp \
     datas/light.cpp \
@@ -45,6 +47,8 @@ HEADERS += \
     canvas/toolwidget.h \
     datas/boundingbox.h \
     datas/camera.h \
+    datas/edge.h \
+    datas/edgehandle.h \
     datas/face.h \
     datas/facehandle.h \
     datas/light.h \

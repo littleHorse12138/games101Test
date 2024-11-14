@@ -44,6 +44,13 @@
    <item>
     <widget class="QWidget" name="m_pWgtFunction" native="true">
      <layout class="QGridLayout" name="gridLayout">
+      <item row="1" column="0">
+       <widget class="QPushButton" name="m_pBtnShowBoundingBox">
+        <property name="text">
+         <string>展示包围盒</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QPushButton" name="m_pBtnShowGrid">
         <property name="text">
@@ -51,10 +58,10 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="m_pBtnShowBoundingBox">
+      <item row="2" column="0">
+       <widget class="QPushButton" name="m_pBtnLoopSubdivision">
         <property name="text">
-         <string>展示包围盒</string>
+         <string>进行一次Loop模型细分</string>
         </property>
        </widget>
       </item>

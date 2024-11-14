@@ -2,6 +2,7 @@
 #include <QStringList>
 #include <QRandomGenerator>
 #include "datas/model.h"
+#include "canvas/openglwidget.h"
 QString Tool::suffix(QString path)
 {
     auto strList = path.split(".");
@@ -16,8 +17,8 @@ float Tool::length(QPoint p)
 Model *GenerateModelTool::generateBall()
 {
     Model* model = new Model;
-    int acc = 35;
-    float r = 0.5;
+    int acc = 10;
+    float r = 0.1;
     QList <QList <VertexHandle*>> vhs;
 
     float vAngle;
@@ -76,4 +77,62 @@ Model *GenerateModelTool::generateCube()
     vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
     vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
     return model;
+}
+
+LoopSubdivisionTool::LoopSubdivisionTool(Model *model)
+{
+    m_pModel = model;
+}
+
+void LoopSubdivisionTool::doLoop()
+{
+    auto mesh = m_pModel->pMesh();
+    qDebug() << "doLoop!!@@" << mesh->edgeHandleList().size();
+    QMap <EdgeHandle*, VertexHandle*> m_oldEdgeAndNewVertex;
+
+    int cnt = 0;
+    for(auto edgeVh: mesh->edgeHandleList()){
+        if(mesh->getBoundingFace(edgeVh).size() == 2){
+            auto e = mesh->edge(edgeVh);
+            auto vh1 = e->vertexHandle(0);
+            auto vh2 = e->vertexHandle(1);
+            auto p0 = mesh->vertex(vh1)->pos();
+            auto p1 = mesh->vertex(vh2)->pos();
+            auto newPos = (p0 + p1) / 2.0;
+            m_oldEdgeAndNewVertex.insert(edgeVh, mesh->addVertex(newPos));
+        }else{
+            auto e = mesh->edge(edgeVh);
+            auto vLeft = mesh->vertex(e->vertexHandle(0));
+            auto vRight = mesh->vertex(e->vertexHandle(1));
+            auto boundingFaceList = mesh->getBoundingFace(edgeVh);
+            auto vUp = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[0], edgeVh));
+            auto vLow = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[1], edgeVh));
+            auto newPos = vLeft->pos()*3.0/8.0 + vRight->pos()*3.0/8.0 + vUp->pos()/8.0 + vLow->pos()/8.0;
+            m_oldEdgeAndNewVertex.insert(edgeVh, mesh->addVertex(newPos));
+        }
+    }
+
+    auto oldFaceList = mesh->faceHandleList();
+    QList <FaceHandle*> newFaceHandle;
+    for(auto fh: oldFaceList){
+        auto f = mesh->face(fh);
+        auto v0 = f->vh(0);
+        auto v2 = f->vh(1);
+        auto v4 = f->vh(2);
+        auto edge1 = mesh->findEdge(v0, v2);
+        auto edge2 = mesh->findEdge(v2, v4);
+        auto edge3 = mesh->findEdge(v4, v0);
+        auto v1 = m_oldEdgeAndNewVertex[edge1];
+        auto v3 = m_oldEdgeAndNewVertex[edge2];
+        auto v5 = m_oldEdgeAndNewVertex[edge3];
+        mesh->addFace(v0, v1, v5);
+        mesh->addFace(v1, v2, v3);
+        mesh->addFace(v5, v3, v4);
+        mesh->addFace(v5, v1, v3);
+    }
+    for(auto face: oldFaceList){
+        mesh->removeFace(face);
+    }
+    m_pModel->updateMeshToShader();
+    return;
 }

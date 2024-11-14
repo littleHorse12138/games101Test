@@ -9,6 +9,7 @@
 #include "datas/viewer.h"
 #include "tool/intersection.h"
 #include "tool/tool.h"
+#include "canvas/modeltreewgt.h"
 OpenglWidget::OpenglWidget(QWidget *parent)
     :QOpenGLWidget(parent)
 {
@@ -28,6 +29,8 @@ void OpenglWidget::initializeGL()
 {
     initializeOpenGLFunctions();
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LINE_SMOOTH);
+    glLineWidth(3.0f);
 }
 
 void OpenglWidget::resizeGL(int w, int h)
@@ -91,7 +94,7 @@ void OpenglWidget::mouseReleaseEvent(QMouseEvent *ev)
 }
 
 void OpenglWidget::wheelEvent(QWheelEvent *ev)
-{
+{    
     if(ev->angleDelta().y() > 0){
         m_pViewer->pCamera()->moveFront();
     }else{
@@ -105,9 +108,15 @@ void OpenglWidget::drawModel(Model *model)
     if(!model){
         return;
     }
+
     if(model->pMesh() && model->pShader() && model->nodeMask()){
         model->pShader()->use();
         model->updateMeshToShader2();
+        if(model->bIsLineModel()){
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }else{
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
         glDrawArrays(GL_TRIANGLES, 0, model->pMesh()->faceNum() * 3);
         glBindVertexArray(0);
         model->pShader()->unUse();
@@ -136,37 +145,19 @@ void OpenglWidget::init()
 
 void OpenglWidget::testInit()
 {
-    GLint flags;
-    glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
-    if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
-        // 上下文是调试上下文
-        qDebug() << "tiaoshi yes1";
-    }else{
-        qDebug() << "tiaoshi no1" << glGetString(GL_VERSION);
-    }
     {
         Model* newModel = new Model;
+        newModel->initBBModelAndPolygonModel();
         MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
         SM->bindToBlingPhoneShader(newModel, m_pViewer);
         newModel->pMesh()->setNormalColor(QVector4D(0,1,0,1));
         newModel->updateMeshToShader();
         m_pViewer->updateAllDataToShader(newModel);
         MDM->addModel(newModel);
+        newModel->setName("杯子");
+        newModel->initBBModelAndPolygonModel();
+        m_pModelTreeWgt->addModel(newModel);
     }
-    // buildNewModel();
-
-
-    // qDebug() << "删除";
-    // auto model = MDM->root()->children()[0];
-    // int fn = model->pMesh()->faceNum();
-    // int cnt = fn / 5;
-    // for(int i = 0; i < cnt; i++){
-    //     model->pMesh()->removeFace(model->pMesh()->faceHandleList().last());
-    // }
-    // model->pMesh()->setNormalColor(QVector4D(0,1,1,1));
-    // model->updateMeshToShader();
-
-
 }
 
 Model* OpenglWidget::buildNewModel()
@@ -185,6 +176,16 @@ Model* OpenglWidget::buildNewModel()
 void OpenglWidget::onTimerUpdateTimeout()
 {
     update();
+}
+
+Viewer *OpenglWidget::pViewer() const
+{
+    return m_pViewer;
+}
+
+void OpenglWidget::setPViewer(Viewer *newPViewer)
+{
+    m_pViewer = newPViewer;
 }
 
 ModelTreeWgt *OpenglWidget::pModelTreeWgt() const

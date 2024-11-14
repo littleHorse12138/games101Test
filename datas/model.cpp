@@ -2,6 +2,7 @@
 #include "datas/boundingbox.h"
 #include "manager/materialmanager.h"
 #include "canvas/openglwidget.h"
+#include "manager/shaderprogrammanager.h"
 Model::Model() {
     // initializeOpenGLFunctions();
     init();
@@ -23,6 +24,26 @@ void Model::init()
     MM->bindModelToStainlessSteelMaterial(this);
 }
 
+Model *Model::pBBModel() const
+{
+    return m_pBBModel;
+}
+
+void Model::setPBBModel(Model *newPBBModel)
+{
+    m_pBBModel = newPBBModel;
+}
+
+Model *Model::pPolygonModel() const
+{
+    return m_pPolygonModel;
+}
+
+void Model::setPPolygonModel(Model *newPPolygonModel)
+{
+    m_pPolygonModel = newPPolygonModel;
+}
+
 QString Model::name() const
 {
     return m_name;
@@ -37,6 +58,39 @@ void Model::useVAO()
 {
     OW->glBindVertexArray(m_vao);
 }
+
+bool Model::bIsLineModel() const
+{
+    return m_bIsLineModel;
+}
+
+void Model::setBIsLineModel(bool newBIsLineModel)
+{
+    if(newBIsLineModel && m_pBBModel){
+        removeChild(m_pBBModel);
+        removeChild(m_pPolygonModel);
+        // m_pBBModel = nullptr;
+
+        // m_pPolygonModel = nullptr;
+        // m_pPolygonModel->setBIsLineModel(true);
+        // addChild(m_pPolygonModel);
+    }
+    m_bIsLineModel = newBIsLineModel;
+}
+
+void Model::initBBModelAndPolygonModel()
+{
+    if(m_pBBModel){
+        return;
+    }
+    m_pBBModel = new Model;
+
+    m_pPolygonModel = new Model;
+    m_pPolygonModel->setBIsLineModel(true);
+    m_pPolygonModel->pMesh()->setNormalColor(QVector4D(0,0,0,1));
+    addChild(m_pPolygonModel);
+}
+
 
 unsigned int Model::vao() const
 {
@@ -61,6 +115,11 @@ void Model::setNodeMask(int newNodeMask)
 void Model::addChild(Model *child)
 {
     m_children.append(child);
+}
+
+bool Model::removeChild(Model *child)
+{
+    return m_children.removeOne(child);
 }
 
 QList<Model *> Model::children() const
@@ -88,6 +147,11 @@ void Model::setMatrix(QMatrix4x4 mat)
     m_matrix = mat;
     if(m_pShader){
         m_pShader->setMatrix("model", mat);
+    }
+    if(m_pPolygonModel){
+        QMatrix4x4 matScale;
+        matScale.scale(QVector3D(1, 1, 1));
+        m_pPolygonModel->setMatrix(matScale * mat);
     }
 }
 
@@ -132,8 +196,13 @@ void Model::updateMeshToShader(int x)
 
     OW->glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void*)(6 * sizeof(float)));
     OW->glEnableVertexAttribArray(2);
-    // OW->glBindBuffer(GL_ARRAY_BUFFER, 0);
-    // OW->glBindVertexArray(0);
+
+    if(m_pPolygonModel){
+        m_pPolygonModel->pMesh()->assign(pMesh());
+        m_pPolygonModel->updateMeshToShader();
+    }
+
+
 }
 
 void Model::updateMeshToShader2(int x)

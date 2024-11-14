@@ -1,6 +1,6 @@
 #include "onemodelwidget.h"
 #include "ui_onemodelwidget.h"
-
+#include "tool/tool.h"
 OneModelWidget::OneModelWidget(Model* model,QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::OneModelWidget)
@@ -17,13 +17,15 @@ OneModelWidget::~OneModelWidget()
 
 void OneModelWidget::init()
 {
+    ui->m_pLabName->setText(m_pModel->name());
+
     ui->m_pBtnExpand->setCheckable(true);
     ui->m_pBtnShowOrHide->setCheckable(true);
     ui->m_pBtnShowBoundingBox->setCheckable(true);
     ui->m_pBtnShowGrid->setCheckable(true);
 
     ui->m_pBtnExpand->setChecked(false);
-    ui->m_pBtnShowOrHide->setChecked(false);
+    ui->m_pBtnShowOrHide->setChecked(true);
     ui->m_pBtnShowBoundingBox->setChecked(false);
     ui->m_pBtnShowGrid->setChecked(false);
 
@@ -41,6 +43,7 @@ void OneModelWidget::connectSignalAndSlots()
     connect(ui->m_pBtnShowOrHide, &QPushButton::clicked, this, &OneModelWidget::onBtnShowOrHideClicked);
     connect(ui->m_pBtnShowGrid, &QPushButton::clicked, this, &OneModelWidget::onBtnShowGridClicked);
     connect(ui->m_pBtnShowBoundingBox, &QPushButton::clicked, this, &OneModelWidget::onBtnShowBoundingBoxClicked);
+    connect(ui->m_pBtnLoopSubdivision, &QPushButton::clicked, this, &OneModelWidget::onBtnLoopSubdivisionClicked);
 }
 
 void OneModelWidget::onBtnExpandlicked()
@@ -67,19 +70,28 @@ void OneModelWidget::onBtnShowOrHideClicked()
 
 void OneModelWidget::onBtnShowGridClicked()
 {
-    if(ui->m_pBtnShowBoundingBox->isChecked()){
-
+    m_pModel->initBBModelAndPolygonModel();
+    if(ui->m_pBtnShowGrid->isChecked()){
+        m_pModel->pPolygonModel()->setNodeMask(1);
     }else{
-
+        m_pModel->pPolygonModel()->setNodeMask(0);
     }
 }
 
 void OneModelWidget::onBtnShowBoundingBoxClicked()
 {
+    m_pModel->initBBModelAndPolygonModel();
     if(ui->m_pBtnShowGrid->isChecked()){
-
+        m_pModel->pPolygonModel()->setNodeMask(1);
     }else{
-
+        m_pModel->pPolygonModel()->setNodeMask(0);
     }
+}
+
+void OneModelWidget::onBtnLoopSubdivisionClicked()
+{
+    LoopSubdivisionTool tool(m_pModel);
+    tool.doLoop();
+    m_pModel->updateMeshToShader();
 }
 
