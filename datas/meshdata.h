@@ -61,16 +61,23 @@ public:
 
     QVector4D color(FaceHandle* fh);
 
-    void removeFace(FaceHandle* fh);
     void setFaceNum(int newFaceNum);
-
+    //删除
+    void removeFace(FaceHandle* fh);
     void removeVertex(VertexHandle* vh);
+    void removeEdge(EdgeHandle* eh); //理论上调用removeFace自动调用这个不用手动调用
 
     void clear();
     void assign(MeshData* data);
 
     QList<EdgeHandle *> edgeHandleList() const;
 
+    void replaceVertex(VertexHandle* vh, QVector3D newPos);
+
+    QList<VertexHandle *> vertexHandleList() const;
+    void setVertexHandleList(const QList<VertexHandle *> &newVertexHandleList);
+
+    void printTopo();
 protected:
     void init();
 private:

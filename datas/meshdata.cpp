@@ -30,9 +30,6 @@ VertexHandle *MeshData::addVertex(QVector3D pos)
 
 VertexHandle *MeshData::vertexHandle(int index)
 {
-    if(index >= m_vertexHandleList.size()){
-        qDebug() << "no way";
-    }
     return m_vertexHandleList[index];
 }
 
@@ -246,9 +243,33 @@ void MeshData::init()
     m_pBoundingBox = new BoundingBoxAABB;
 }
 
+QList<VertexHandle *> MeshData::vertexHandleList() const
+{
+    return m_vertexHandleList;
+}
+
+void MeshData::setVertexHandleList(const QList<VertexHandle *> &newVertexHandleList)
+{
+    m_vertexHandleList = newVertexHandleList;
+}
+
+void MeshData::printTopo()
+{
+    qDebug() << "step 1!!" << m_vertexAndBoundFaceMap.size();
+    qDebug() << "step 2!!" << m_vertexAndBoundVertexMap.size();
+    qDebug() << "step 3!!" << m_vertexAndBoundEdgeMap.size();
+    qDebug() << "step 4!!" << m_edgeAndBoundFaceMap.size();
+    qDebug() << "step 5!!" << m_faceAndBoundEdgeMap.size();
+}
+
 QList<EdgeHandle *> MeshData::edgeHandleList() const
 {
     return m_edgeHandleList;
+}
+
+void MeshData::replaceVertex(VertexHandle *vh, QVector3D newPos)
+{
+    vertex(vh)->setPos(newPos);
 }
 
 void MeshData::setFaceNum(int newFaceNum)
@@ -261,6 +282,20 @@ void MeshData::removeVertex(VertexHandle *vh)
     m_vertexMap.remove(vh);
     m_vertexHandleList.removeOne(vh);
     m_vertexAndBoundFaceMap.remove(vh);
+}
+
+void MeshData::removeEdge(EdgeHandle *eh)
+{
+    auto e = edge(eh);
+    for(int i = 0; i < 2; i++){
+        auto key = e->vertexHandle(i);
+        m_vertexAndBoundEdgeMap[key].removeOne(eh);
+    }
+    m_vertexAndBoundVertexMap[e->vertexHandle(0)].removeOne(e->vertexHandle(1));
+    m_vertexAndBoundVertexMap[e->vertexHandle(1)].removeOne(e->vertexHandle(0));
+    m_edgeAndBoundFaceMap.remove(eh);
+    m_edgeMap.remove(eh);
+    m_edgeHandleList.removeOne(eh);
 }
 
 void MeshData::clear()
@@ -310,13 +345,21 @@ QVector4D MeshData::color(FaceHandle *fh)
 
 void MeshData::removeFace(FaceHandle *fh)
 {
+    auto f = face(fh);
+    for(int i = 0; i < 3; i++){
+        auto key = f->vh(i);
+        m_vertexAndBoundFaceMap[key].removeOne(fh);
+    }
+    for(auto edgeVh: m_faceAndBoundEdgeMap[fh]){
+        if(m_edgeAndBoundFaceMap[edgeVh].size() == 1){ //边也要删除
+            removeEdge(edgeVh);
+        }else{
+            m_edgeAndBoundFaceMap[edgeVh].removeOne(fh);
+        }
+    }
+    m_faceAndBoundEdgeMap.remove(fh);
     m_faceMap.remove(fh);
     m_faceHandleList.removeOne(fh);
-    for(auto &key: m_vertexAndBoundFaceMap.keys()){
-        auto v = m_vertexAndBoundFaceMap[key];
-        v.removeOne(fh);
-        m_vertexAndBoundFaceMap[key] = v;
-    }
      m_faceNum--;
 }
 

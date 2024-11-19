@@ -3,6 +3,7 @@
 #include <QRandomGenerator>
 #include "datas/model.h"
 #include "canvas/openglwidget.h"
+#include "QElapsedTimer"
 QString Tool::suffix(QString path)
 {
     auto strList = path.split(".");
@@ -17,13 +18,13 @@ float Tool::length(QPoint p)
 Model *GenerateModelTool::generateBall()
 {
     Model* model = new Model;
-    int acc = 10;
-    float r = 0.1;
+    int acc = 6;
+    float r = 10;
     QList <QList <VertexHandle*>> vhs;
 
     float vAngle;
     float hAngle;
-    for(int i = 0; i < acc; i++){
+    for(int i = 1; i < acc; i++){
         QList <VertexHandle*> vhs1;
         vAngle = -1*M_PI*0.5 + (M_PI * i / ((float)acc));
         for(int j = 0; j < acc; j++){
@@ -47,6 +48,15 @@ Model *GenerateModelTool::generateBall()
             model->pMesh()->addFace(vhs[i][j], vhs[i+1][n], vhs[i+1][j]);
         }
     }
+
+    auto head = model->pMesh()->addVertex(QVector3D(0, 0, -r));
+    auto tail = model->pMesh()->addVertex(QVector3D(0, 0, r));
+    for(int j = 0; j < oneCnt; j++){
+        int n = j+1==oneCnt?0:j+1;
+        model->pMesh()->addFace(vhs[0][j], vhs[0][n], head);
+        model->pMesh()->addFace(tail, vhs[floorCnt-1][j], vhs[floorCnt-1][n]);
+    }
+
     return model;
 }
 
@@ -90,30 +100,26 @@ void LoopSubdivisionTool::doLoop()
     qDebug() << "doLoop!!@@" << mesh->edgeHandleList().size();
     QMap <EdgeHandle*, VertexHandle*> m_oldEdgeAndNewVertex;
 
-    int cnt = 0;
+    QElapsedTimer timer;
+    timer.start();
+    QList <VertexHandle*> oldVhs = mesh->vertexHandleList();
+    QList <VertexHandle*> newVhs;
     for(auto edgeVh: mesh->edgeHandleList()){
-        if(mesh->getBoundingFace(edgeVh).size() == 2){
-            auto e = mesh->edge(edgeVh);
-            auto vh1 = e->vertexHandle(0);
-            auto vh2 = e->vertexHandle(1);
-            auto p0 = mesh->vertex(vh1)->pos();
-            auto p1 = mesh->vertex(vh2)->pos();
-            auto newPos = (p0 + p1) / 2.0;
-            m_oldEdgeAndNewVertex.insert(edgeVh, mesh->addVertex(newPos));
-        }else{
-            auto e = mesh->edge(edgeVh);
-            auto vLeft = mesh->vertex(e->vertexHandle(0));
-            auto vRight = mesh->vertex(e->vertexHandle(1));
-            auto boundingFaceList = mesh->getBoundingFace(edgeVh);
-            auto vUp = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[0], edgeVh));
-            auto vLow = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[1], edgeVh));
-            auto newPos = vLeft->pos()*3.0/8.0 + vRight->pos()*3.0/8.0 + vUp->pos()/8.0 + vLow->pos()/8.0;
-            m_oldEdgeAndNewVertex.insert(edgeVh, mesh->addVertex(newPos));
-        }
+        auto e = mesh->edge(edgeVh);
+        auto vh1 = e->vertexHandle(0);
+        auto vh2 = e->vertexHandle(1);
+        auto p0 = mesh->vertex(vh1)->pos();
+        auto p1 = mesh->vertex(vh2)->pos();
+        auto newPos = (p0 + p1) / 2.0;
+        auto vhNew = mesh->addVertex(newPos);
+        m_oldEdgeAndNewVertex.insert(edgeVh, vhNew);
+        newVhs.append(vhNew);
     }
 
+    qDebug() << "步骤1 生成新顶点结束" << timer.elapsed();
     auto oldFaceList = mesh->faceHandleList();
     QList <FaceHandle*> newFaceHandle;
+    QMap <VertexHandle*, QList <VertexHandle*>> newVAndBoundV;
     for(auto fh: oldFaceList){
         auto f = mesh->face(fh);
         auto v0 = f->vh(0);
@@ -129,10 +135,86 @@ void LoopSubdivisionTool::doLoop()
         mesh->addFace(v1, v2, v3);
         mesh->addFace(v5, v3, v4);
         mesh->addFace(v5, v1, v3);
+        newVAndBoundV[v1].append(v0);
+        newVAndBoundV[v1].append(v2);
+        newVAndBoundV[v1].append(v3);
+        newVAndBoundV[v1].append(v5);
+        newVAndBoundV[v3].append(v1);
+        newVAndBoundV[v3].append(v2);
+        newVAndBoundV[v3].append(v4);
+        newVAndBoundV[v3].append(v5);
+        newVAndBoundV[v5].append(v0);
+        newVAndBoundV[v5].append(v1);
+        newVAndBoundV[v5].append(v3);
+        newVAndBoundV[v5].append(v4);
     }
+    qDebug() << "步骤2 生成新面结束" << timer.elapsed();
     for(auto face: oldFaceList){
         mesh->removeFace(face);
     }
+    qDebug() << "步骤3 删除旧面结束" << timer.elapsed();
+
+    QMap <VertexHandle*, QVector3D> vertexAndNewPos;
+    for(auto vh: mesh->vertexHandleList()){
+        if(oldVhs.contains(vh)){
+            auto v = mesh->vertex(vh);
+            if(mesh->getBoundingEdge(vh).size() != mesh->getBoundingVertex(vh).size()){
+                qDebug() << "eror occ";
+            }
+            float n = mesh->getBoundingEdge(vh).size();
+            float u = mesh->getBoundingEdge(vh).size()==3?(3.0 / 16.0):(3/(8.0*n));
+            QVector3D newPos = v->pos() * (1 - n*u);
+            QVector3D otherSum(0,0,0);
+            for(auto vh1: mesh->getBoundingVertex(vh)){
+                otherSum += mesh->vertex(vh1)->pos();
+            }
+            newPos += u * otherSum;
+            vertexAndNewPos.insert(vh, newPos);
+        }else{
+            if(newVAndBoundV[vh].size() == 8){
+                QVector3D newPos1(0,0,0);
+                for(auto vh1: newVAndBoundV[vh]){
+                    newPos1 += mesh->vertex(vh1)->pos() / 8.0;
+                }
+                vertexAndNewPos.insert(vh, newPos1);
+            }else if(newVAndBoundV.size() == 4){
+
+            }else{
+                qDebug() << "error occu!" << newVAndBoundV[vh].size();
+            }
+        }
+    }
+
+    // for(auto edgeVh: m_oldEdgeAndNewVertex.keys()){
+    //     auto vh = m_oldEdgeAndNewVertex[edgeVh];
+    //     if(newVAndBoundV.size() == 1){
+    //         auto e = mesh->edge(edgeVh);
+    //         auto vh1 = e->vertexHandle(0);
+    //         auto vh2 = e->vertexHandle(1);
+    //         auto p0 = mesh->vertex(vh1)->pos();
+    //         auto p1 = mesh->vertex(vh2)->pos();
+    //         auto newPos = (p0 + p1) / 2.0;
+    //         vertexAndNewPos.insert(vh, newPos);
+    //     }else if(mesh->getBoundingFace(edgeVh).size() == 2){
+    //         auto e = mesh->edge(edgeVh);
+    //         auto vLeft = mesh->vertex(e->vertexHandle(0));
+    //         auto vRight = mesh->vertex(e->vertexHandle(1));
+    //         auto boundingFaceList = mesh->getBoundingFace(edgeVh);
+    //         auto vUp = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[0], edgeVh));
+    //         auto vLow = mesh->vertex(mesh->getOppoVertexHandle(boundingFaceList[1], edgeVh));
+    //         auto newPos = vLeft->pos()*3.0/8.0 + vRight->pos()*3.0/8.0 + vUp->pos()/8.0 + vLow->pos()/8.0;
+    //         vertexAndNewPos.insert(vh, newPos);
+    //     }else{
+
+    //         qDebug() << "检测到非流形边！！" << mesh->getBoundingFace(edgeVh).size();
+    //     }
+    // }
+    for(auto key: vertexAndNewPos.keys()){
+        mesh->replaceVertex(key, vertexAndNewPos[key]);
+    }
+
+    qDebug() << "步骤4 替换旧顶点结束" << timer.elapsed();
     m_pModel->updateMeshToShader();
+    qDebug() << "步骤5 更新到着色器结束" << timer.elapsed();
     return;
 }

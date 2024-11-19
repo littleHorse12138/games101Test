@@ -198,6 +198,7 @@ void Model::updateMeshToShader(int x)
     OW->glEnableVertexAttribArray(2);
 
     if(m_pPolygonModel){
+        m_pPolygonModel->pMesh()->clear();
         m_pPolygonModel->pMesh()->assign(pMesh());
         m_pPolygonModel->updateMeshToShader();
     }

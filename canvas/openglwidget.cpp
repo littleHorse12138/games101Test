@@ -146,6 +146,7 @@ void OpenglWidget::init()
 void OpenglWidget::testInit()
 {
     {
+        // Model* newModel = GenerateModelTool::generateBall();
         Model* newModel = new Model;
         newModel->initBBModelAndPolygonModel();
         MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
@@ -154,6 +155,9 @@ void OpenglWidget::testInit()
         newModel->updateMeshToShader();
         m_pViewer->updateAllDataToShader(newModel);
         MDM->addModel(newModel);
+        QMatrix4x4 mat;
+        mat.scale(10,10,10);
+        // newModel->setMatrix(mat);
         newModel->setName("杯子");
         newModel->initBBModelAndPolygonModel();
         m_pModelTreeWgt->addModel(newModel);
