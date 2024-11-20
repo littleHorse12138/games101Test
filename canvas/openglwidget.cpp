@@ -146,10 +146,10 @@ void OpenglWidget::init()
 void OpenglWidget::testInit()
 {
     {
-        // Model* newModel = GenerateModelTool::generateBall();
-        Model* newModel = new Model;
+        Model* newModel = GenerateModelTool::generateCube();
+        // Model* newModel = new Model;
         newModel->initBBModelAndPolygonModel();
-        MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
+        // MDM->readMesh(newModel->pMesh(), "C:/test1/test.obj");
         SM->bindToBlingPhoneShader(newModel, m_pViewer);
         newModel->pMesh()->setNormalColor(QVector4D(0,1,0,1));
         newModel->updateMeshToShader();

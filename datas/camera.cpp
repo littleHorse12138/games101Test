@@ -18,10 +18,11 @@ QMatrix4x4 Camera::getPerspectiveMatrix()
 
 void Camera::widgetScaleChanged(float w, float h)
 {
-    auto n = qMax(w,h);
-    w = n;
-    h = n;
+    // auto n = qMax(w,h);
+    // w = n;
+    // h = n;
     float aspect = w / h;
+    qDebug() << "scale!!" << aspect;
     m_perspectiveMatrix = QMatrix4x4();
     m_perspectiveMatrix.perspective(45.0f, aspect, 0.1f, 100.0f);
     emit sgCameraPerspectiveChanged();

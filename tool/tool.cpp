@@ -79,13 +79,32 @@ Model *GenerateModelTool::generateCube()
 {
     Model* model = new Model;
     QList <VertexHandle*> vhs;
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
-    vhs.append(model->pMesh()->addVertex(QVector3D(1,1,1)));
+    float l = 2;
+    vhs.append(model->pMesh()->addVertex(QVector3D(l,l,l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(l,-l,l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(l,-l,-l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(l,l,-l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(-l,l,l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(-l,-l,l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(-l,-l,-l)));
+    vhs.append(model->pMesh()->addVertex(QVector3D(-l,l,-l)));
+    model->pMesh()->addFace(vhs[0], vhs[1], vhs[2]);
+    model->pMesh()->addFace(vhs[0], vhs[2], vhs[3]);
+
+    model->pMesh()->addFace(vhs[6], vhs[5], vhs[4]);
+    model->pMesh()->addFace(vhs[6], vhs[4], vhs[7]);
+
+    model->pMesh()->addFace(vhs[4], vhs[0], vhs[3]);
+    model->pMesh()->addFace(vhs[4], vhs[3], vhs[7]);
+
+    model->pMesh()->addFace(vhs[1], vhs[5], vhs[2]);
+    model->pMesh()->addFace(vhs[2], vhs[5], vhs[6]);
+
+    model->pMesh()->addFace(vhs[5], vhs[1], vhs[0]);
+    model->pMesh()->addFace(vhs[5], vhs[0], vhs[4]);
+
+    model->pMesh()->addFace(vhs[3], vhs[6], vhs[2]);
+    model->pMesh()->addFace(vhs[3], vhs[7], vhs[6]);
     return model;
 }
 
