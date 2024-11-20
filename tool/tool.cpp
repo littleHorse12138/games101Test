@@ -103,8 +103,10 @@ Model *GenerateModelTool::generateCube()
     model->pMesh()->addFace(vhs[5], vhs[1], vhs[0]);
     model->pMesh()->addFace(vhs[5], vhs[0], vhs[4]);
 
-    model->pMesh()->addFace(vhs[3], vhs[6], vhs[2]);
-    model->pMesh()->addFace(vhs[3], vhs[7], vhs[6]);
+    model->pMesh()->addFace(vhs[2], vhs[6], vhs[3]);
+    model->pMesh()->addFace(vhs[6], vhs[7], vhs[3]);
+
+    //0 1 4 5
     return model;
 }
 
@@ -237,3 +239,72 @@ void LoopSubdivisionTool::doLoop()
     qDebug() << "步骤5 更新到着色器结束" << timer.elapsed();
     return;
 }
+
+bool FileTool::isFileExist(QString path)
+{
+    return QFile::exists(path);
+}
+
+bool FileTool::isDirExist(QString path)
+{
+    QFileInfo fileInfo(path);
+    if(fileInfo.isDir())
+    {
+        return true;
+    }
+    return false;
+}
+
+bool FileTool::deleteFile(QString path)
+{
+    if(!FileTool::isFileExist(path)){
+        return false;
+    }
+    return QFile::remove(path);
+}
+
+bool FileTool::deleteDir(QString path)
+{
+    if(!FileTool::isDirExist(path)){
+        return false;
+    }
+    QDir qDir(path);
+    return qDir.removeRecursively();
+}
+
+bool FileTool::createFile(QString path)
+{
+    QFile file(path);
+    bool ok = file.open(QIODevice::ReadWrite);
+    if(!ok){
+        return false;
+    }
+    file.close();
+    return true;
+}
+
+bool FileTool::createDir(QString path)
+{
+    QDir dir(path);
+    return dir.mkdir(path);
+}
+
+bool FileTool::createFileOrDir(QString path)
+{
+    auto strList = path.split("/");
+    if(strList.size() < 1){
+        return false;
+    }
+    auto strPath = strList[0] + "/" + strList[1];
+    for(int i = 2; i < strList.size(); i++){
+        strPath += "/";
+        strPath += strList[i];
+        if(strList[i].contains(".")){
+            FileTool::createFile(strPath);
+        }else{
+            FileTool::createDir(strPath);
+        }
+    }
+    return true;
+}
+

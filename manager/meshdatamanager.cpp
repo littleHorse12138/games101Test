@@ -20,6 +20,46 @@ MeshDataManager *MeshDataManager::getInstance()
     return instance;
 }
 
+void MeshDataManager::writeMesh(MeshData *data, QString path)
+{
+    if(!data){
+        return;
+    }
+    FileTool::createFileOrDir(path);
+
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning("Cannot open file for write");
+        return;
+    }
+
+    QTextStream in(&file);
+    for(auto vh: data->vertexHandleList()){
+        auto pos = data->vertex(vh)->pos();
+        QString str = "v ";
+        str += QString::number(pos[0]);
+        str += " ";
+        str += QString::number(pos[1]);
+        str += " ";
+        str += QString::number(pos[2]);
+        in << str << Qt::endl;
+    }
+
+    for(auto fh: data->faceHandleList()){
+        auto f = data->face(fh);
+        auto index0 = data->vertexHandleList().indexOf(f->vh(0));
+        auto index1 = data->vertexHandleList().indexOf(f->vh(1));
+        auto index2 = data->vertexHandleList().indexOf(f->vh(2));
+        QString str = "f ";
+        str += QString::number(index0 + 1);
+        str += " ";
+        str += QString::number(index1 + 1);
+        str += " ";
+        str += QString::number(index2 + 1);
+        in << str << Qt::endl;
+    }
+}
+
 bool MeshDataManager::readMesh(MeshData *data, QString path)
 {
     if(!data){

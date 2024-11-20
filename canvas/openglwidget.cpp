@@ -161,7 +161,10 @@ void OpenglWidget::testInit()
         newModel->setName("杯子");
         newModel->initBBModelAndPolygonModel();
         m_pModelTreeWgt->addModel(newModel);
+
+        MDM->writeMesh(newModel->pMesh(), "C:/test1/cube.obj");
     }
+
 }
 
 Model* OpenglWidget::buildNewModel()

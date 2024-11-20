@@ -26,4 +26,19 @@ private:
     Model* m_pModel = nullptr;
 };
 
+namespace FileTool{
+    bool isDirExist(QString path);
+    bool isFileExist(QString path);
+
+    bool createFile(QString path);
+    bool createDir(QString path);
+
+    bool deleteFile(QString path);
+    bool deleteDir(QString path);
+
+    bool createFileOrDir(QString path);
+};
+
+
+
 #endif // TOOL_H
